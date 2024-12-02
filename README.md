@@ -1,2 +1,2 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+Solutions for the [2024 Advent of Code](https://adventofcode.com/2024),
+written in Dart.
