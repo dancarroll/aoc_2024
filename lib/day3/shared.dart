@@ -1,6 +1,12 @@
 import 'package:aoc_2024/lib.dart';
 
-final class Mult {
+abstract class Instruction {}
+
+final class Do extends Instruction {}
+
+final class Dont extends Instruction {}
+
+final class Mult extends Instruction {
   final int first;
   final int second;
 
@@ -11,17 +17,32 @@ final class Mult {
   int get product => first * second;
 }
 
-List<Mult> parseLine(String line) {
-  final regex = RegExp(r'mul\((?<first>\d{1,3}),(?<second>\d{1,3})\)');
+Instruction parseInstruction(RegExpMatch match) {
+  if (match.namedGroup('mult') != null) {
+    return Mult(match.namedGroup('first').toString(),
+        match.namedGroup('second').toString());
+  } else if (match.namedGroup('dont') != null) {
+    return Dont();
+  } else if (match.namedGroup('do') != null) {
+    return Do();
+  }
 
-  return regex
-      .allMatches(line)
-      .map((m) => Mult(
-          m.namedGroup('first').toString(), m.namedGroup('second').toString()))
-      .toList();
+  throw Exception('unexpected group');
 }
 
-Future<List<Mult>> loadData(Resources resources) async {
+List<Instruction> parseLine(String line) {
+  final regex = RegExp(
+      // First group: match `mul(123, 456)`
+      r'(?<mult>mul\((?<first>\d{1,3}),(?<second>\d{1,3})\))'
+      // Second group: match `don't()`
+      r"|(?<dont>don't\(\))"
+      // Third group: match `do()`
+      r'|(?<do>do\(\))');
+
+  return regex.allMatches(line).map((m) => parseInstruction(m)).toList();
+}
+
+Future<List<Instruction>> loadData(Resources resources) async {
   final file = resources.file(Day.day3);
   final lines = await file.readAsLines();
 
