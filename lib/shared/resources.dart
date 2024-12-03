@@ -9,7 +9,8 @@ enum ResourceType {
 
 enum Day {
   day1,
-  day2;
+  day2,
+  day3;
 }
 
 final class Resources {
