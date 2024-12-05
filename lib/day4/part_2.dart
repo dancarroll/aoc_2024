@@ -2,9 +2,9 @@ import 'package:aoc_2024/lib.dart';
 
 import 'shared.dart';
 
-/// X-MAS
-///
-/// Find the number of times MAS in the shape of an X appears
+/// Word search looking where two instances of 'MAS' appear
+/// crossed on the diagonal (X-MAS), e.g. an X shaped
+/// centered on the 'A' letter.
 ///
 /// ```
 /// M.S

@@ -2,6 +2,9 @@ import 'package:aoc_2024/lib.dart';
 
 import 'shared.dart';
 
+/// Word search: find the number of times 'XMAS' appears
+/// in a grid. The word can appear in any direction (e.g.
+/// forward, backward, diagonal, etc).
 Future<int> calculate(Resources resources) async {
   final lines = await loadData(resources);
   return _calculate(lines);

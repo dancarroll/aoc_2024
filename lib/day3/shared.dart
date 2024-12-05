@@ -1,11 +1,17 @@
 import 'package:aoc_2024/lib.dart';
 
+/// Represents an instruction loaded from a file.
 abstract class Instruction {}
 
+/// A [Do] instructions means any following multiplication
+/// should be executed.
 final class Do extends Instruction {}
 
+/// A [Dont] instructions means any following multiplication
+/// should not be executed.
 final class Dont extends Instruction {}
 
+/// Represents a multiplication instruction.
 final class Mult extends Instruction {
   final int first;
   final int second;
@@ -17,7 +23,8 @@ final class Mult extends Instruction {
   int get product => first * second;
 }
 
-Instruction parseInstruction(RegExpMatch match) {
+/// Parses an instruction from a regular expression match.
+Instruction _parseInstruction(RegExpMatch match) {
   if (match.namedGroup('mult') != null) {
     return Mult(match.namedGroup('first').toString(),
         match.namedGroup('second').toString());
@@ -30,7 +37,8 @@ Instruction parseInstruction(RegExpMatch match) {
   throw Exception('unexpected group');
 }
 
-List<Instruction> parseLine(String line) {
+/// Parses a string into an ordered list of instructions.
+List<Instruction> _parseLine(String line) {
   final regex = RegExp(
       // First group: match `mul(123, 456)`
       r'(?<mult>mul\((?<first>\d{1,3}),(?<second>\d{1,3})\))'
@@ -39,12 +47,13 @@ List<Instruction> parseLine(String line) {
       // Third group: match `do()`
       r'|(?<do>do\(\))');
 
-  return regex.allMatches(line).map((m) => parseInstruction(m)).toList();
+  return regex.allMatches(line).map((m) => _parseInstruction(m)).toList();
 }
 
+/// Loads a file and parses out all of the instructions in order.
 Future<List<Instruction>> loadData(Resources resources) async {
   final file = resources.file(Day.day3);
   final lines = await file.readAsLines();
 
-  return lines.map((l) => parseLine(l)).reduce((v, e) => v..addAll(e));
+  return lines.map((l) => _parseLine(l)).reduce((v, e) => v..addAll(e));
 }

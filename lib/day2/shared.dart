@@ -1,5 +1,7 @@
 import 'package:aoc_2024/lib.dart';
 
+/// Represents a single report, which is a sequence of
+/// integers (levels).
 final class Report {
   final List<int> levels;
 
@@ -7,6 +9,10 @@ final class Report {
     assert(levels.length > 1);
   }
 
+  /// Returns true if the report is "safe", which means the
+  /// sequence of numbers only ever goes in one direction
+  /// (increasing or decreasing), and never changes more than
+  /// 3 in any single jump.
   bool isSafe() {
     int? comp;
     var last = levels[0];
@@ -49,15 +55,12 @@ final class Report {
   }
 }
 
-Future<List<Report>> loadData(Resources resources) async {
+/// Loads data from file, parses the values into integers.
+Future<Iterable<Report>> loadData(Resources resources) async {
   final file = resources.file(Day.day2);
   final lines = await file.readAsLines();
 
-  final List<Report> reports = [];
-
-  for (final line in lines) {
-    reports.add(Report(line.split(' ').map((s) => int.parse(s)).toList()));
-  }
-
-  return reports;
+  return lines
+      .map((line) => line.split(' ').map((s) => int.parse(s)))
+      .map((levels) => Report(levels.toList()));
 }

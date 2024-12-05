@@ -2,4 +2,6 @@
 # Created by `dart pub`
 .dart_tool/
 
+# AOC guidelines ask that participants do not share
+# their unique puzzle input.
 resources/real_data

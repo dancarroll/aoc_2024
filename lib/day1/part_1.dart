@@ -2,6 +2,8 @@ import 'package:aoc_2024/lib.dart';
 
 import 'shared.dart';
 
+/// Calculate the difference between two lists, by sorting
+/// each list and adding up the difference of each pair.
 Future<int> calculate(Resources resources) async {
   final contents = await loadData(resources);
   assert(contents.listA.length == contents.listB.length);

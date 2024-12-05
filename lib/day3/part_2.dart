@@ -2,6 +2,12 @@ import 'package:aoc_2024/lib.dart';
 
 import 'shared.dart';
 
+/// Extract do/don't instructions, along with multiplication
+/// statements, and compute the sum of all of those statements.
+/// 
+/// `do()` and `don't` instructions enable or disable all 
+/// multiplications that follow (until the next instruction is
+/// encountered).
 Future<int> calculate(Resources resources) async {
   final data = await loadData(resources);
 
