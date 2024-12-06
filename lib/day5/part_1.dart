@@ -13,6 +13,5 @@ Future<int> calculate(Resources resources) async {
   return contents.updates
       .where((update) => update.isValid(rules: contents.rules))
       .map((update) => update.middle)
-      .reduce((v, e) => v+e);
+      .reduce((v, e) => v + e);
 }
-

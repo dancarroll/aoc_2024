@@ -87,6 +87,17 @@ final class Update {
 
     return i >= pages.length;
   }
+
+  /// Uses the rules in the rules graph to sort this update's
+  /// page values.
+  void sortViaRules({required final RulesGraph rules}) {
+    pages.sort((a, b) {
+      final nodeA = rules[a];
+      final nodeB = rules[b];
+
+      return nodeA!.after.contains(nodeB) ? -1 : 1;
+    });
+  }
 }
 
 /// Loads data from file, with each line represents as
