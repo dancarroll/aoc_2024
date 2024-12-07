@@ -12,8 +12,8 @@ Future<int> calculate(Resources resources) async {
 }
 
 bool _canEquationBeTrue(final AmbiguousEquation equation) =>
-    equation.potentialEquations([
+    equation.canBeValid([
       Add(),
       Multiply(),
       Concatenation(),
-    ]).any((e) => e.isValid());
+    ]);

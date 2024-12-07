@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:aoc_2024/lib.dart';
 
 /// Represents an arbitrary equation component.
@@ -87,39 +85,32 @@ final class AmbiguousEquation {
 
   AmbiguousEquation({required this.result, required this.operands});
 
-  /// Generates a list of all potential equations from the operands
-  /// in this equation, based on the given list of operators.
-  Iterable<Equation> potentialEquations(List<Operator> operators) {
+  /// Returns true if any combination of the given operators would result
+  /// in this equation being valid.
+  bool canBeValid(List<Operator> operators) {
     List<List<Operator>> operatorCombinatorial = [];
-    _generateOperators(
+    return _generateValidOperators(
         operands.length - 1, operators, operatorCombinatorial, 0, []);
-    assert(operatorCombinatorial.length ==
-        pow(operators.length, operands.length - 1));
+  }
 
-    return operatorCombinatorial.map((operators) {
+  /// Recursively generates a list of operator combinations and determines if
+  /// any result in a valid equation.
+  bool _generateValidOperators(int length, List<Operator> operators,
+      List<List<Operator>> result, int depth, List<Operator> current) {
+    if (depth == length) {
       var components = <Component>[];
       for (int i = 0; i < operands.length; i++) {
         components.add(Value(operands[i]));
-        if (i < operators.length) {
-          components.add(operators[i]);
+        if (i < current.length) {
+          components.add(current[i]);
         }
       }
-      return Equation(result: result, components: components);
-    });
-  }
-
-  /// Recursively generates a list of operator combinations.
-  void _generateOperators(int length, List<Operator> operators,
-      List<List<Operator>> result, int depth, List<Operator> current) {
-    if (depth == length) {
-      result.add(current);
-      return;
+      final equation = Equation(result: this.result, components: components);
+      return equation.isValid();
     }
 
-    for (int i = 0; i < operators.length; i++) {
-      _generateOperators(
-          length, operators, result, depth + 1, [...current, operators[i]]);
-    }
+    return operators.any((operator) => _generateValidOperators(
+        length, operators, result, depth + 1, [...current, operator]));
   }
 }
 
