@@ -42,4 +42,7 @@ final class Resources {
     };
     return File(path.join('resources', folder, '${day.name}.txt'));
   }
+
+  @override
+  String toString() => type.name;
 }
