@@ -2,27 +2,36 @@ import 'dart:math';
 
 import 'package:aoc_2024/lib.dart';
 
-enum Operators {
-  add,
-  multiply;
-}
+/// Represents an arbitrary equation component.
+abstract class Component {}
 
-class Component {}
-
+/// Represents an operator within an equation.
 abstract class Operator extends Component {}
 
+/// Addition operator.
 class Add extends Operator {
   @override
   String toString() => '+';
 }
 
+/// Multiplication operator.
 class Multiply extends Operator {
   @override
   String toString() => '*';
 }
 
+/// Concatenation operator (concatenates the numbers on
+/// the left and right side to make a new number).
+class Concatenation extends Operator {
+  @override
+  String toString() => '||';
+}
+
+/// Identity operator, which just copies the next number in
+/// the equation.
 class Identity extends Operator {}
 
+/// Represents a numerical value operand.
 class Value extends Component {
   final int num;
 
@@ -32,12 +41,15 @@ class Value extends Component {
   String toString() => num.toString();
 }
 
+/// Represents an equation, which may or may not be valid.
 final class Equation {
   final int result;
   final List<Component> components;
 
   Equation({required this.result, required this.components});
 
+  /// Computes the result of the equation, and returns true if the value
+  /// matches the equations stated result.
   bool isValid() {
     var computedResult = 0;
     Operator operator = Identity();
@@ -53,6 +65,8 @@ final class Equation {
             computedResult += component.num;
           case == Multiply:
             computedResult *= component.num;
+          case == Concatenation:
+            computedResult = int.parse('$computedResult${component.num}');
         }
       }
     }
@@ -65,32 +79,24 @@ final class Equation {
       '$result: ${components.map((c) => c.toString()).join(' ')}';
 }
 
+/// Represents an ambiguous equation, which has a list of operands
+/// but no operators.
 final class AmbiguousEquation {
   final int result;
   final List<int> operands;
 
   AmbiguousEquation({required this.result, required this.operands});
 
-  List<Equation> get potentialEquations {
-    // 1 2 3 4
-    // 3 operators
-    // + + +
-    // + + *
-    // + * *
-    // * * *
-    // * + +
-    // * * +
-    // * + *
-    // + * +
-    List<List<Operator>> operatorOptions = [];
+  /// Generates a list of all potential equations from the operands
+  /// in this equation, based on the given list of operators.
+  Iterable<Equation> potentialEquations(List<Operator> operators) {
+    List<List<Operator>> operatorCombinatorial = [];
     _generateOperators(
-        operands.length - 1, [Add(), Multiply()], operatorOptions, 0, []);
-    assert(operatorOptions.length == pow(2, operands.length - 1));
+        operands.length - 1, operators, operatorCombinatorial, 0, []);
+    assert(operatorCombinatorial.length ==
+        pow(operators.length, operands.length - 1));
 
-    //for (final operatorList in operatorOptions) {
-    //  print(operatorList);
-    //}
-    return operatorOptions.map((operators) {
+    return operatorCombinatorial.map((operators) {
       var components = <Component>[];
       for (int i = 0; i < operands.length; i++) {
         components.add(Value(operands[i]));
@@ -99,9 +105,10 @@ final class AmbiguousEquation {
         }
       }
       return Equation(result: result, components: components);
-    }).toList();
+    });
   }
 
+  /// Recursively generates a list of operator combinations.
   void _generateOperators(int length, List<Operator> operators,
       List<List<Operator>> result, int depth, List<Operator> current) {
     if (depth == length) {
@@ -118,7 +125,7 @@ final class AmbiguousEquation {
 
 /// Loads data from file, with each line represents as
 /// an equation.
-Future<List<AmbiguousEquation>> loadData(Resources resources) async {
+Future<Iterable<AmbiguousEquation>> loadData(Resources resources) async {
   final file = resources.file(Day.day7);
   final lines = await file.readAsLines();
 
@@ -131,5 +138,5 @@ Future<List<AmbiguousEquation>> loadData(Resources resources) async {
         components[1].trim().split(' ').map((s) => int.parse(s)).toList();
 
     return AmbiguousEquation(result: result, operands: operands);
-  }).toList();
+  });
 }

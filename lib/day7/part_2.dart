@@ -15,4 +15,5 @@ bool _canEquationBeTrue(final AmbiguousEquation equation) =>
     equation.potentialEquations([
       Add(),
       Multiply(),
+      Concatenation(),
     ]).any((e) => e.isValid());
