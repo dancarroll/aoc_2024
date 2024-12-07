@@ -4,7 +4,7 @@ import 'package:aoc_2024/day1/part_2.dart' as part2;
 import 'package:test/test.dart';
 
 void main() {
-  group('sample data', () {
+  group('sample data', tags: 'sample-data', () {
     final resources = Resources.sample;
 
     test('part1', () async {
@@ -16,7 +16,7 @@ void main() {
     });
   });
 
-  group('real data', () {
+  group('real data', tags: 'real-data', () {
     final resources = Resources.real;
 
     test('part1', () async {
