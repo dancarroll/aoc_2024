@@ -21,7 +21,8 @@ enum Day {
   day3,
   day4,
   day5,
-  day6;
+  day6,
+  day7;
 }
 
 /// Manager for loading a resource file, based on type and day.

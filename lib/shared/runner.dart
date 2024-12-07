@@ -9,9 +9,14 @@ final _stopwatch = Stopwatch();
 Future<void> runDay(
     {required final int day,
     required final DayFunction part1,
-    required final DayFunction part2}) async {
+    required final DayFunction part2,
+    runSample = true,
+    runReal = true}) async {
   print('Advent of Code - Day $day');
-  for (final resource in [Resources.sample, Resources.real]) {
+  for (final resource in [
+    if (runSample) Resources.sample,
+    if (runReal) Resources.real
+  ]) {
     print('- $resource data:');
 
     for (final part in [(1, part1), (2, part2)]) {
