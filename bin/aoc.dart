@@ -7,9 +7,15 @@ import 'day6.dart' as day6;
 
 void main(List<String> arguments) async {
   print('');
-  for (final day in [day1.main, day2.main, day3.main, day4.main, day5.main, day6.main]) {
+  for (final day in [
+    day1.main,
+    day2.main,
+    day3.main,
+    day4.main,
+    day5.main,
+    day6.main
+  ]) {
     await day(arguments);
     print('');
   }
 }
-

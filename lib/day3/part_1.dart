@@ -4,7 +4,7 @@ import 'shared.dart';
 
 /// Extract multiplication statements [`mul(123,456)`]
 /// from text, and compute the sum of all of those statements.
-/// 
+///
 /// Multiplication statements are located in a "corrupted"
 /// text string, e.g.:
 /// ```

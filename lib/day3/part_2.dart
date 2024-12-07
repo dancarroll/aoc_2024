@@ -4,8 +4,8 @@ import 'shared.dart';
 
 /// Extract do/don't instructions, along with multiplication
 /// statements, and compute the sum of all of those statements.
-/// 
-/// `do()` and `don't` instructions enable or disable all 
+///
+/// `do()` and `don't` instructions enable or disable all
 /// multiplications that follow (until the next instruction is
 /// encountered).
 Future<int> calculate(Resources resources) async {

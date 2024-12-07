@@ -8,7 +8,7 @@ import 'shared.dart';
 /// obstruction.
 Future<int> calculate(Resources resources) async {
   final mapWithOriginalPath = await loadMap(resources);
-  
+
   // Execute the logic in order to get a list of all locations visited
   // by the person in the original map. This will give a list of
   // candidate locations to add a new obstruction.
