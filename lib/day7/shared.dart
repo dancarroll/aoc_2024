@@ -41,14 +41,19 @@ class Value extends Component {
 
 /// Represents an equation, which may or may not be valid.
 final class Equation {
-  final int result;
+  final int statedResult;
   final List<Component> components;
 
-  Equation({required this.result, required this.components});
+  Equation({required this.statedResult, required this.components});
 
   /// Computes the result of the equation, and returns true if the value
   /// matches the equations stated result.
   bool isValid() {
+    return compute() == statedResult;
+  }
+
+  /// Computes the actual result of the equation.
+  int compute() {
     var computedResult = 0;
     Operator operator = Identity();
 
@@ -69,21 +74,21 @@ final class Equation {
       }
     }
 
-    return computedResult == result;
+    return computedResult;
   }
 
   @override
   String toString() =>
-      '$result: ${components.map((c) => c.toString()).join(' ')}';
+      '$statedResult: ${components.map((c) => c.toString()).join(' ')}';
 }
 
 /// Represents an ambiguous equation, which has a list of operands
 /// but no operators.
 final class AmbiguousEquation {
-  final int result;
+  final int statedResult;
   final List<int> operands;
 
-  AmbiguousEquation({required this.result, required this.operands});
+  AmbiguousEquation({required this.statedResult, required this.operands});
 
   /// Returns true if any combination of the given operators would result
   /// in this equation being valid.
@@ -98,19 +103,34 @@ final class AmbiguousEquation {
   bool _generateValidOperators(int length, List<Operator> operators,
       List<List<Operator>> result, int depth, List<Operator> current) {
     if (depth == length) {
-      var components = <Component>[];
-      for (int i = 0; i < operands.length; i++) {
-        components.add(Value(operands[i]));
-        if (i < current.length) {
-          components.add(current[i]);
-        }
-      }
-      final equation = Equation(result: this.result, components: components);
-      return equation.isValid();
+      return _checkEquationVal(current) == statedResult;
+    } else if (_checkEquationVal(current) > statedResult) {
+      // Due to the valid operators, the equation value can only increase as
+      // it is executed. As soon as the value exceeds the stated value, we
+      // can stop processing this chain.
+      return false;
     }
 
     return operators.any((operator) => _generateValidOperators(
         length, operators, result, depth + 1, [...current, operator]));
+  }
+
+  /// Checks the value of the equation given a (potential partial) set of
+  /// operators. If not enough operators are specified to accomodate all
+  /// of the operands, this will use as many operands as possible.
+  int _checkEquationVal(final List<Operator> operators) {
+    var components = <Component>[];
+    // TODO(dancarroll): iterate over operators instead of operands, to handle
+    // calculation for a partial equation.
+    for (int i = 0; i < operands.length; i++) {
+      components.add(Value(operands[i]));
+      if (i < operators.length) {
+        components.add(operators[i]);
+      }
+    }
+    final equation =
+        Equation(statedResult: statedResult, components: components);
+    return equation.compute();
   }
 }
 
@@ -128,6 +148,6 @@ Future<Iterable<AmbiguousEquation>> loadData(Resources resources) async {
     final operands =
         components[1].trim().split(' ').map((s) => int.parse(s)).toList();
 
-    return AmbiguousEquation(result: result, operands: operands);
+    return AmbiguousEquation(statedResult: result, operands: operands);
   });
 }
