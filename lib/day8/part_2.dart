@@ -4,5 +4,5 @@ import 'shared.dart';
 
 Future<int> calculate(Resources resources) async {
   final frequencyMap = await loadData(resources);
-  return frequencyMap.antinodes(includeHarmonics: false).length;
+  return frequencyMap.antinodes(includeHarmonics: true).length;
 }

@@ -21,6 +21,50 @@ final class FrequencyMap {
         location.y >= 0 &&
         location.y < width;
   }
+
+  Set<Location> antinodes({bool includeHarmonics = false}) {
+    Set<Location> antinodes = {};
+
+    for (final antennaLocations in antennaLocations.values) {
+      for (final pair in pairs(antennaLocations)) {
+        antinodes.addAll(_generateAntinodesUntilOutOfBounds(
+            a: pair.$1, b: pair.$2, includeHarmonics: includeHarmonics));
+      }
+    }
+
+    return antinodes;
+  }
+
+  Set<Location> _generateAntinodesUntilOutOfBounds(
+      {required Location a,
+      required Location b,
+      required bool includeHarmonics}) {
+    final hop = a - b;
+    Set<Location> locations = {};
+
+    final List<({Location starting, Location Function(Location) hopFunc})>
+        directionFunctions = [
+      (starting: a, hopFunc: (l) => l + hop),
+      (starting: a, hopFunc: (l) => l - hop),
+      (starting: b, hopFunc: (l) => l + hop),
+      (starting: b, hopFunc: (l) => l - hop),
+    ];
+
+    for (final direction in directionFunctions) {
+      var addedOneAntinode = false;
+      var next = direction.hopFunc(direction.starting);
+      while ((includeHarmonics || !addedOneAntinode) &&
+          (includeHarmonics || (next != a && next != b)) &&
+          inBounds(next) &&
+          !locations.contains(next)) {
+        locations.add(next);
+        addedOneAntinode = true;
+        next = direction.hopFunc(next);
+      }
+    }
+
+    return locations;
+  }
 }
 
 /// Loads data from file, which is a map of frequency to
