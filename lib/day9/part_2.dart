@@ -2,6 +2,20 @@ import 'dart:io';
 
 import 'shared.dart';
 
+/// Continuing from part 1, defrag the disk by don't split up files.
+/// This means finding a large enough block of free space to move the
+/// entire file.
+///
+/// Example:
+/// ```
+/// 00...111...2...333.44.5555.6666.777.888899
+/// 0099.111...2...333.44.5555.6666.777.8888..
+/// 0099.1117772...333.44.5555.6666.....8888..
+/// 0099.111777244.333....5555.6666.....8888..
+/// 00992111777.44.333....5555.6666.....8888..
+/// ```
+///
+/// Calculate and return a checksum in the same manner as part 1.
 Future<int> calculate(File file) async {
   final references = await loadDiskMap(file);
 
