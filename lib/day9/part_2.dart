@@ -59,11 +59,20 @@ Future<int> calculate(File file) async {
     nextFree = 0;
   }
 
-  final memory = explodeBlocks(references);
-  int checksum = 0;
-  for (int i = 0; i < memory.length; i++) {
-    final memoryVal = memory[i].id ?? 0;
-    checksum += memoryVal * i;
+  int blockChecksum = 0;
+  int memoryIndex = 0;
+  for (int i = 0; i < references.length; i++) {
+    final ref = references[i];
+    // For this block, we need to calculate:
+    // [memoryIndex]*id + [memoryIndex+1]*id + ... [memoryIndex+size-1]*id
+    //
+    // Rather than iterating over each memory location in this block, we can
+    // calculate the factor using the equation: (size/2) * (firstIndex + lastIndex).
+    final factor =
+        ((ref.size / 2) * (memoryIndex + (memoryIndex + ref.size - 1))).toInt();
+    blockChecksum += factor * (ref.id ?? 0);
+    memoryIndex += ref.size;
   }
-  return checksum;
+
+  return blockChecksum;
 }
