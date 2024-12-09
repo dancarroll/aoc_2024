@@ -1,11 +1,11 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
 /// Following from part 1, but introduce a new operator:
 /// concatenate (`||`).
-Future<int> calculate(Resources resources) async {
-  final equations = await loadData(resources);
+Future<int> calculate(File file) async {
+  final equations = await loadData(file);
 
   final result = equations
       .where((e) => _canEquationBeTrue(e))

@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -8,8 +8,8 @@ import 'shared.dart';
 /// `do()` and `don't` instructions enable or disable all
 /// multiplications that follow (until the next instruction is
 /// encountered).
-Future<int> calculate(Resources resources) async {
-  final data = await loadData(resources);
+Future<int> calculate(File file) async {
+  final data = await loadData(file);
 
   var value = 0;
   var ignore = false;

@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -10,8 +10,8 @@ import 'shared.dart';
 /// ```
 /// xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
 /// ```
-Future<int> calculate(Resources resources) async {
-  final data = await loadData(resources);
+Future<int> calculate(File file) async {
+  final data = await loadData(file);
   final val = data.whereType<Mult>().fold(0, (v, e) => v + e.product);
   return val;
 }

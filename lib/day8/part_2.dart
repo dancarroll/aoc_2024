@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -12,7 +12,7 @@ import 'shared.dart';
 ///
 /// Return value is the same as part 1: number of unique locations that
 /// are antinodes.
-Future<int> calculate(Resources resources) async {
-  final frequencyMap = await loadData(resources);
+Future<int> calculate(File file) async {
+  final frequencyMap = await loadData(file);
   return frequencyMap.antinodes(includeHarmonics: true).length;
 }

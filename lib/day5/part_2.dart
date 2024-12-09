@@ -1,12 +1,12 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
 /// Following from Part 1, find the updates that are not valid,
 /// fix them to make them valid, then find and add up all of the
 /// middle numbers.
-Future<int> calculate(Resources resources) async {
-  final contents = await loadData(resources);
+Future<int> calculate(File file) async {
+  final contents = await loadData(file);
 
   return contents.updates
       .where((update) => !update.isValid(rules: contents.rules))

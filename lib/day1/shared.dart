@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 /// Represents the contents of the data, which are two
 /// sorted lists of integers.
@@ -12,8 +12,7 @@ final class Contents {
 /// Loads two columns of from a file, parses the columns
 /// entries into integers, and sorts those lists
 /// independently.
-Future<Contents> loadData(Resources resources) async {
-  final file = resources.file(Day.day1);
+Future<Contents> loadData(File file) async {
   final lines = await file.readAsLines();
 
   final List<int> listA = [];

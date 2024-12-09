@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -11,8 +11,8 @@ import 'shared.dart';
 /// .A.
 /// M.S
 /// ```
-Future<int> calculate(Resources resources) async {
-  final lines = await loadData(resources);
+Future<int> calculate(File file) async {
+  final lines = await loadData(file);
   return _calculate(lines);
 }
 

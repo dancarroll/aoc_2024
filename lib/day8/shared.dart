@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:aoc_2024/lib.dart';
@@ -102,8 +103,7 @@ final class FrequencyMap {
 
 /// Loads data from file, which is a map of frequency to
 /// locations (points on a map).
-Future<FrequencyMap> loadData(Resources resources) async {
-  final file = resources.file(Day.day8);
+Future<FrequencyMap> loadData(File file) async {
   final lines = await file.readAsLines();
 
   Map<String, List<Location>> frequencies = {};

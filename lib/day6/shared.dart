@@ -1,6 +1,5 @@
+import 'dart:io';
 import 'dart:math';
-
-import 'package:aoc_2024/lib.dart';
 
 /// Represents a location within the map.
 class Location {
@@ -182,8 +181,7 @@ final class LocationMap {
   }
 }
 
-Future<LocationMap> loadMap(Resources resources) async {
-  final file = resources.file(Day.day6);
+Future<LocationMap> loadMap(File file) async {
   final lines = await file.readAsLines();
 
   return LocationMap.fromStrings(lines);

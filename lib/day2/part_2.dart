@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -9,7 +9,7 @@ import 'shared.dart';
 /// decrease, and no step is greater than 3. A report is
 /// also safe if it follows those properties with any
 /// single level removed.
-Future<int> calculate(Resources resources) async {
-  final reports = await loadData(resources);
+Future<int> calculate(File file) async {
+  final reports = await loadData(file);
   return reports.where((report) => report.isSafeWithOneRemovedLevel()).length;
 }

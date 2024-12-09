@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -11,7 +11,7 @@ import 'shared.dart';
 /// This function should return the number of locations on the map that
 /// are antinodes (some locations may be antinodes for multiple
 /// frequencies, so only count those once).
-Future<int> calculate(Resources resources) async {
-  final frequencyMap = await loadData(resources);
+Future<int> calculate(File file) async {
+  final frequencyMap = await loadData(file);
   return frequencyMap.antinodes(includeHarmonics: false).length;
 }

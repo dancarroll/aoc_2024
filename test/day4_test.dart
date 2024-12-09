@@ -4,27 +4,31 @@ import 'package:aoc_2024/day4/part_2.dart' as part2;
 import 'package:test/test.dart';
 
 void main() {
+  final day = Day.day4;
+
   group('sample data', tags: 'sample-data', () {
     final resources = Resources.sample;
+    final file = resources.file(day);
 
     test('part1', () async {
-      expect(await part1.calculate(resources), 18);
+      expect(await part1.calculate(file), 18);
     });
 
     test('part2', () async {
-      expect(await part2.calculate(resources), 9);
+      expect(await part2.calculate(file), 9);
     });
   });
 
   group('real data', tags: 'real-data', () {
     final resources = Resources.real;
+    final file = resources.file(day);
 
     test('part1', () async {
-      expect(await part1.calculate(resources), 2583);
+      expect(await part1.calculate(file), 2583);
     });
 
     test('part2', () async {
-      expect(await part2.calculate(resources), 1978);
+      expect(await part2.calculate(file), 1978);
     });
   });
 }

@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -12,8 +12,8 @@ import 'shared.dart';
 /// The first value is the equation result, and the remaining value
 /// are the equation operands. The only valid operators are add (`+`)
 /// and multiply (`*`).
-Future<int> calculate(Resources resources) async {
-  final equations = await loadData(resources);
+Future<int> calculate(File file) async {
+  final equations = await loadData(file);
 
   final result = equations
       .where((e) => _canEquationBeTrue(e))

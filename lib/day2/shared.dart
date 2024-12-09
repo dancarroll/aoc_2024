@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 /// Represents a single report, which is a sequence of
 /// integers (levels).
@@ -56,8 +56,7 @@ final class Report {
 }
 
 /// Loads data from file, parses the values into integers.
-Future<Iterable<Report>> loadData(Resources resources) async {
-  final file = resources.file(Day.day2);
+Future<Iterable<Report>> loadData(File file) async {
   final lines = await file.readAsLines();
 
   return lines

@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -9,8 +9,8 @@ import 'shared.dart';
 /// - Move forward until reaching an obstruction (#)
 /// - When reaching obstruction, turn 90 degress right
 /// - Continue until leaving the bounds of the map
-Future<int> calculate(Resources resources) async {
-  final map = await loadMap(resources);
+Future<int> calculate(File file) async {
+  final map = await loadMap(file);
   map.moveUntilPersonLeavesMap();
   return map.numVisited;
 }

@@ -1,4 +1,5 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 
 /// A rules graph is a map of page numbers to page nodes.
@@ -102,8 +103,7 @@ final class Update {
 
 /// Loads data from file, with each line represents as
 /// a string in the list.
-Future<Contents> loadData(Resources resources) async {
-  final file = resources.file(Day.day5);
+Future<Contents> loadData(File file) async {
   final lines = await file.readAsLines();
 
   final rules = <Rule>[];

@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 /// Represents an instruction loaded from a file.
 abstract class Instruction {}
@@ -51,8 +51,7 @@ List<Instruction> _parseLine(String line) {
 }
 
 /// Loads a file and parses out all of the instructions in order.
-Future<List<Instruction>> loadData(Resources resources) async {
-  final file = resources.file(Day.day3);
+Future<List<Instruction>> loadData(File file) async {
   final lines = await file.readAsLines();
 
   return lines.map((l) => _parseLine(l)).reduce((v, e) => v..addAll(e));

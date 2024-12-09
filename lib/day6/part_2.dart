@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 import 'shared.dart';
 
@@ -6,8 +6,8 @@ import 'shared.dart';
 /// be placed in the map in order to get the person stuck in a loop.
 /// Calculate how many possible options there are for adding a single
 /// obstruction.
-Future<int> calculate(Resources resources) async {
-  final mapWithOriginalPath = await loadMap(resources);
+Future<int> calculate(File file) async {
+  final mapWithOriginalPath = await loadMap(file);
 
   // Execute the logic in order to get a list of all locations visited
   // by the person in the original map. This will give a list of
@@ -22,7 +22,7 @@ Future<int> calculate(Resources resources) async {
   var candidatesWithCycle = 0;
   for (final candidate in candidateLocations) {
     // Reload the original map, in order to get a fresh instance.
-    final candidateMap = await loadMap(resources);
+    final candidateMap = await loadMap(file);
 
     // Add an obstruction in the candidate location.
     candidateMap.map[candidate.x][candidate.y].isObstruction = true;

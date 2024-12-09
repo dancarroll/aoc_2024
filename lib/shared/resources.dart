@@ -24,6 +24,8 @@ enum Day {
   day6,
   day7,
   day8;
+
+  String get number => name.substring(3);
 }
 
 /// Manager for loading a resource file, based on type and day.

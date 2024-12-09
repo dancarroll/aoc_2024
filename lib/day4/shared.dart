@@ -1,8 +1,7 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 /// Loads data from file, with each line represents as
 /// a string in the list.
-Future<List<String>> loadData(Resources resources) async {
-  final file = resources.file(Day.day4);
+Future<List<String>> loadData(File file) async {
   return file.readAsLines();
 }

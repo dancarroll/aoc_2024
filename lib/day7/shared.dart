@@ -1,4 +1,4 @@
-import 'package:aoc_2024/lib.dart';
+import 'dart:io';
 
 /// Represents an arbitrary equation component.
 abstract class Component {}
@@ -134,8 +134,7 @@ final class AmbiguousEquation {
 
 /// Loads data from file, with each line represents as
 /// an equation.
-Future<Iterable<AmbiguousEquation>> loadData(Resources resources) async {
-  final file = resources.file(Day.day7);
+Future<Iterable<AmbiguousEquation>> loadData(File file) async {
   final lines = await file.readAsLines();
 
   return lines.map((line) {
