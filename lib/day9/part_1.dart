@@ -3,7 +3,7 @@ import 'dart:io';
 import 'shared.dart';
 
 Future<int> calculate(File file) async {
-  final memory = await loadData(file);
+  final memory = await loadMemory(file);
 
   int nextFree = 0;
   while (memory[nextFree].id != null) {

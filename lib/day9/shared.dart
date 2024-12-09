@@ -2,15 +2,47 @@ import 'dart:io';
 
 import 'package:aoc_2024/lib.dart';
 
+final class DiskReference {
+  int size;
+  int? id;
+
+  DiskReference({required this.size, required this.id});
+}
+
 final class MemoryLocation {
   int? id;
 
   MemoryLocation(this.id);
 }
 
-/// Loads data from file, which is a map of frequency to
-/// locations (points on a map).
-Future<List<MemoryLocation>> loadData(File file) async {
+List<MemoryLocation> convertDiskMap(List<DiskReference> references) {
+  List<MemoryLocation> memory = [];
+  for (final ref in references) {
+    for (int i = 0; i < ref.size; i++) {
+      memory.add(MemoryLocation(ref.id));
+    }
+  }
+
+  return memory;
+}
+
+Future<List<DiskReference>> loadDiskMap(File file) async {
+  final line = await file.readAsString();
+
+  List<DiskReference> references = [];
+  int id = 0;
+  bool isFile = true;
+  for (int i = 0; i < line.length; i++) {
+    references
+        .add(DiskReference(size: int.parse(line[i]), id: isFile ? id : null));
+    if (isFile) id++;
+    isFile = !isFile;
+  }
+
+  return references;
+}
+
+Future<List<MemoryLocation>> loadMemory(File file) async {
   final line = await file.readAsString();
 
   List<MemoryLocation> memory = [];
