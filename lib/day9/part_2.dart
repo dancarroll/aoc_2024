@@ -6,32 +6,26 @@ Future<int> calculate(File file) async {
   final references = await loadDiskMap(file);
 
   int nextFree = 1;
-
   int nextToMove = references.length - 1;
-  // while (references[nextToMove].id == null) {
-  //   nextToMove--;
-  // }
 
   while (nextToMove > nextFree && nextToMove >= 1) {
-    //_printDiskMap(references);
-    while (references[nextToMove].id == null) {
+    while (references[nextToMove].isFree) {
       nextToMove--;
     }
     while (nextFree < nextToMove &&
         (references[nextToMove].size > references[nextFree].size ||
-            references[nextFree].id != null)) {
+            !references[nextFree].isFree)) {
       nextFree++;
     }
 
+    // If we've gotten into an illegal situation (moving memory to a
+    // later position), then we can't move this block, so move to the
+    // block on the left.
     if (nextFree >= nextToMove) {
       nextToMove--;
       nextFree = 0;
       continue;
     }
-
-    // print('Identified swap: moving memory');
-    // print('  - from $nextToMove (size ${references[nextToMove].size})');
-    // print('  - to $nextFree (size ${references[nextFree].size})');
 
     final remainingFreeSpace =
         references[nextFree].size - references[nextToMove].size;
@@ -43,13 +37,13 @@ Future<int> calculate(File file) async {
       references.insert(
           nextFree + 1, DiskReference(size: remainingFreeSpace, id: null));
     } else {
+      // If we added a new disk reference, then don't decrement here,
+      // otherwise we would be skipping a block (due to the indices changing).
       nextToMove--;
     }
 
     nextFree = 0;
   }
-
-  //_printDiskMap(references);
 
   final memory = convertDiskMap(references);
   int checksum = 0;
@@ -58,20 +52,4 @@ Future<int> calculate(File file) async {
     checksum += memoryVal * i;
   }
   return checksum;
-}
-
-void _printDiskMap(List<DiskReference> references) {
-  var map = '';
-  for (final ref in references) {
-    map += ref.size.toString();
-  }
-  print('Disk map: $map');
-
-  var memory = '';
-  for (final ref in references) {
-    for (int i = 0; i < ref.size; i++) {
-      memory += ref.id?.toString() ?? '.';
-    }
-  }
-  print('Memory: $memory');
 }

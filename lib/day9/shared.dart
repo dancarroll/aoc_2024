@@ -7,6 +7,8 @@ final class DiskReference {
   int? id;
 
   DiskReference({required this.size, required this.id});
+
+  bool get isFree => id == null;
 }
 
 final class MemoryLocation {
