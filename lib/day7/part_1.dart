@@ -7,7 +7,7 @@ Future<int> calculate(Resources resources) async {
 
   final result = equations
       .where((e) => _canEquationBeTrue(e))
-      .fold(0, (v, e) => v + e.result);
+      .fold(0, (v, e) => v + e.statedResult);
   return result;
 }
 

@@ -120,14 +120,13 @@ final class AmbiguousEquation {
   /// of the operands, this will use as many operands as possible.
   int _checkEquationVal(final List<Operator> operators) {
     var components = <Component>[];
-    // TODO(dancarroll): iterate over operators instead of operands, to handle
-    // calculation for a partial equation.
-    for (int i = 0; i < operands.length; i++) {
-      components.add(Value(operands[i]));
-      if (i < operators.length) {
-        components.add(operators[i]);
-      }
+
+    components.add(Value(operands[0]));
+    for (int i = 0; i < operators.length; i++) {
+      components.add(operators[i]);
+      components.add(Value(operands[i + 1]));
     }
+
     final equation =
         Equation(statedResult: statedResult, components: components);
     return equation.compute();
