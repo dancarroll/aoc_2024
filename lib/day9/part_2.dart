@@ -17,7 +17,7 @@ import 'shared.dart';
 ///
 /// Calculate and return a checksum in the same manner as part 1.
 Future<int> calculate(File file) async {
-  final references = await loadDiskMap(file);
+  final references = await loadBlocks(file);
 
   int nextFree = 1;
   int nextToMove = references.length - 1;
@@ -49,7 +49,7 @@ Future<int> calculate(File file) async {
 
     if (remainingFreeSpace > 0) {
       references.insert(
-          nextFree + 1, DiskReference(size: remainingFreeSpace, id: null));
+          nextFree + 1, BlockReference(size: remainingFreeSpace, id: null));
     } else {
       // If we added a new disk reference, then don't decrement here,
       // otherwise we would be skipping a block (due to the indices changing).
@@ -59,7 +59,7 @@ Future<int> calculate(File file) async {
     nextFree = 0;
   }
 
-  final memory = convertDiskMap(references);
+  final memory = explodeBlocks(references);
   int checksum = 0;
   for (int i = 0; i < memory.length; i++) {
     final memoryVal = memory[i].id ?? 0;
