@@ -93,26 +93,25 @@ final class AmbiguousEquation {
   /// Returns true if any combination of the given operators would result
   /// in this equation being valid.
   bool canBeValid(List<Operator> operators) {
-    List<List<Operator>> operatorCombinatorial = [];
-    return _generateValidOperators(
-        operands.length - 1, operators, operatorCombinatorial, 0, []);
+    return _generateValidOperators(operands.length - 1, operators, []);
   }
 
   /// Recursively generates a list of operator combinations and determines if
   /// any result in a valid equation.
-  bool _generateValidOperators(int length, List<Operator> operators,
-      List<List<Operator>> result, int depth, List<Operator> current) {
-    if (depth == length) {
+  bool _generateValidOperators(int targetLength, List<Operator> operatorOptions,
+      List<Operator> current) {
+    if (current.length == targetLength) {
       return _checkEquationVal(current) == statedResult;
-    } else if (_checkEquationVal(current) > statedResult) {
+    } else if (current.isNotEmpty &&
+        _checkEquationVal(current) > statedResult) {
       // Due to the valid operators, the equation value can only increase as
       // it is executed. As soon as the value exceeds the stated value, we
       // can stop processing this chain.
       return false;
     }
 
-    return operators.any((operator) => _generateValidOperators(
-        length, operators, result, depth + 1, [...current, operator]));
+    return operatorOptions.any((operator) => _generateValidOperators(
+        targetLength, operatorOptions, [...current, operator]));
   }
 
   /// Checks the value of the equation given a (potential partial) set of
