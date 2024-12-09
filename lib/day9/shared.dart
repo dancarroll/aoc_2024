@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:aoc_2024/lib.dart';
-
 final class DiskReference {
   int size;
   int? id;
