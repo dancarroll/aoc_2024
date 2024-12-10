@@ -47,12 +47,12 @@ List<Instruction> _parseLine(String line) {
       // Third group: match `do()`
       r'|(?<do>do\(\))');
 
-  return regex.allMatches(line).map((m) => _parseInstruction(m)).toList();
+  return regex.allMatches(line).map(_parseInstruction).toList();
 }
 
 /// Loads a file and parses out all of the instructions in order.
 Future<List<Instruction>> loadData(File file) async {
   final lines = await file.readAsLines();
 
-  return lines.map((l) => _parseLine(l)).reduce((v, e) => v..addAll(e));
+  return lines.map(_parseLine).reduce((v, e) => v..addAll(e));
 }

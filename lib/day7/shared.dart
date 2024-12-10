@@ -139,11 +139,10 @@ Future<Iterable<AmbiguousEquation>> loadData(File file) async {
 
   return lines.map((line) {
     final components = line.split(':');
-    assert(components.length == 2);
+    assert(components.length == 2, 'Only expect one semicolon in the input');
 
     final result = int.parse(components[0]);
-    final operands =
-        components[1].trim().split(' ').map((s) => int.parse(s)).toList();
+    final operands = components[1].trim().split(' ').map(int.parse).toList();
 
     return AmbiguousEquation(statedResult: result, operands: operands);
   });

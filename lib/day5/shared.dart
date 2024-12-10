@@ -56,8 +56,9 @@ final class Rule {
 
   Rule({required this.before, required this.after});
 
+  /// Convenience factory to build a [Rule] from a list of two pages.
   factory Rule.fromList(List<int> pages) {
-    assert(pages.length == 2);
+    assert(pages.length == 2, 'Expect exactly two pages');
     return Rule(before: pages[0], after: pages[1]);
   }
 }
@@ -70,7 +71,10 @@ final class Update {
 
   /// Returns the middle page value for the update.
   int get middle {
-    assert(pages.length.isOdd);
+    assert(
+      pages.length.isOdd,
+      'This should only be called with an odd number of pages',
+    );
     return pages[(pages.length / 2).floor()];
   }
 
@@ -115,15 +119,13 @@ Future<Contents> loadData(File file) async {
 
   for (final line in lines) {
     if (parsingUpdates) {
-      updates.add(
-          Update(pages: line.split(',').map((s) => int.parse(s)).toList()));
+      updates.add(Update(pages: line.split(',').map(int.parse).toList()));
     } else if (line == '') {
       // When we encounter the empty line, switch from parsing rules to
       // parsing updates.
       parsingUpdates = true;
     } else {
-      rules.add(
-          Rule.fromList(line.split('|').map((s) => int.parse(s)).toList()));
+      rules.add(Rule.fromList(line.split('|').map(int.parse).toList()));
     }
   }
 

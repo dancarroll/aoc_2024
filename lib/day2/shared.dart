@@ -6,7 +6,7 @@ final class Report {
   final List<int> levels;
 
   Report(this.levels) {
-    assert(levels.length > 1);
+    assert(levels.length > 1, 'Report needs at least one level');
   }
 
   /// Returns true if the report is "safe", which means the
@@ -60,6 +60,6 @@ Future<Iterable<Report>> loadData(File file) async {
   final lines = await file.readAsLines();
 
   return lines
-      .map((line) => line.split(' ').map((s) => int.parse(s)))
+      .map((line) => line.split(' ').map(int.parse))
       .map((levels) => Report(levels.toList()));
 }

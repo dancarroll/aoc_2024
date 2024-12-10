@@ -57,16 +57,16 @@ int _calculateDirection(
   if (rowDir == 0 && colDir == 0) return 0;
 
   var r = row, c = col;
-  var str = '';
-  while (str.length < 4 &&
+  final buf = StringBuffer();
+  while (buf.length < 4 &&
       r >= 0 &&
       r < lines.length &&
       c >= 0 &&
       c < lines[0].length) {
-    str += lines[r][c];
+    buf.write(lines[r][c]);
     r += rowDir;
     c += colDir;
   }
 
-  return (str == 'XMAS') ? 1 : 0;
+  return (buf.toString() == 'XMAS') ? 1 : 0;
 }

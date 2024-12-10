@@ -24,18 +24,6 @@ final class MemoryLocation {
   MemoryLocation(this.id);
 }
 
-/// Converts short-form disk map into an exploded view of memory locations.
-List<MemoryLocation> explodeBlocks(List<BlockReference> references) {
-  List<MemoryLocation> memory = [];
-  for (final ref in references) {
-    for (int i = 0; i < ref.size; i++) {
-      memory.add(MemoryLocation(ref.id));
-    }
-  }
-
-  return memory;
-}
-
 /// Loads a disk map file as a short-form list of block references.
 Future<List<BlockReference>> loadBlocks(File file) async {
   final line = await file.readAsString();
