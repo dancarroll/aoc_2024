@@ -21,15 +21,21 @@ Future<void> runDay(
   ]) {
     print('- $resource data:');
 
-    for (final part in [(1, part1), (2, part2)]) {
+    for (final part in [('1', part1), ('2', part2)]) {
       final file = resource.file(day);
-      _stopwatch.reset();
-      _stopwatch.start();
-      final result = await part.$2(file);
-      _stopwatch.stop();
-
-      print(
-          '  - Part ${part.$1}: $result  (${_stopwatch.elapsedMilliseconds}ms)');
+      await runFile(file: file, func: part.$2, part: part.$1);
     }
   }
+}
+
+Future<void> runFile(
+    {required final File file,
+    required final DayFunction func,
+    required final String part}) async {
+  _stopwatch.reset();
+  _stopwatch.start();
+  final result = await func(file);
+  _stopwatch.stop();
+
+  print('  - Part $part: $result  (${_stopwatch.elapsedMilliseconds}ms)');
 }

@@ -8,4 +8,15 @@ Future<void> main(List<String> arguments) async {
     part1: part1.calculate,
     part2: part2.calculate,
   );
+
+  // Two stress-test inputs shared in this Reddit post:
+  // https://www.reddit.com/r/adventofcode/comments/1haauty/2024_day_9_part_2_bonus_test_case_that_might_make/
+  await runFile(
+      file: Resources.fun.fileByName('day9_hell'),
+      func: part2.calculate,
+      part: 'evil_input');
+  await runFile(
+      file: Resources.fun.fileByName('day9_hell2'),
+      func: part2.calculate,
+      part: 'really_evil_input');
 }

@@ -10,8 +10,12 @@ enum ResourceType {
 
   /// The real test input, which is unique per participant
   /// (and is not checked into the repository, following
-  /// AOC guidelines).
-  real;
+  /// AoC guidelines).
+  real,
+
+  /// Extra inputs, not part of the official AoC inputs.
+  /// For example, stress-test inputs shared on Reddit.
+  fun;
 }
 
 /// Represents each day in Advent of Code 2024.
@@ -55,13 +59,19 @@ final class Resources {
 
   static Resources get real => Resources(ResourceType.real);
 
+  static Resources get fun => Resources(ResourceType.fun);
+
   /// Create a file reference for the given day.
-  File file(Day day) {
+  File file(Day day) => fileByName(day.name);
+
+  /// Create a file reference for the given day.
+  File fileByName(final String name) {
     final folder = switch (type) {
       ResourceType.sample => 'sample_data',
-      ResourceType.real => 'real_data'
+      ResourceType.real => 'real_data',
+      ResourceType.fun => 'fun_data',
     };
-    return File(path.join('resources', folder, '${day.name}.txt'));
+    return File(path.join('resources', folder, '$name.txt'));
   }
 
   @override
