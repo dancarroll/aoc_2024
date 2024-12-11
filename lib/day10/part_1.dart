@@ -39,25 +39,12 @@ Set<Point> _summitsReachableFromPoint(
   Set<Point> summits = {};
   visitedPoints.add(point);
 
-  for (final record in [(1, 0), (-1, 0), (0, 1), (0, -1)]) {
-    final newX = point.x + record.$1;
-    final newY = point.y + record.$2;
-
-    if (newX < 0 ||
-        newY < 0 ||
-        newX >= topoMap.height ||
-        newY >= topoMap.height) {
-      continue;
-    }
-
-    final nextPoint = topoMap.getPoint(newX, newY);
-    if (nextPoint.isGradualStepFromPoint(point)) {
-      if (nextPoint.isSummit) {
-        summits.add(nextPoint);
-      } else {
-        summits.addAll(
-            _summitsReachableFromPoint(topoMap, nextPoint, visitedPoints));
-      }
+  for (final nextPoint in topoMap.getValidNextSteps(point)) {
+    if (nextPoint.isSummit) {
+      summits.add(nextPoint);
+    } else {
+      summits.addAll(
+          _summitsReachableFromPoint(topoMap, nextPoint, visitedPoints));
     }
   }
 

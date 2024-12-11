@@ -61,6 +61,30 @@ final class TopographicMap {
     return map[r][c];
   }
 
+  /// Returns the set of valid next steps from the given point.
+  ///
+  /// A valid step is one step along a cardinal directions, in the bounds of
+  /// the map, and at an elevation exactly 1 greater than the given point.
+  Set<Point> getValidNextSteps(Point point) {
+    Set<Point> nextSteps = {};
+
+    for (final record in [(1, 0), (-1, 0), (0, 1), (0, -1)]) {
+      final newX = point.x + record.$1;
+      final newY = point.y + record.$2;
+
+      if (newX < 0 || newY < 0 || newX >= height || newY >= height) {
+        continue;
+      }
+
+      final nextPoint = getPoint(newX, newY);
+      if (nextPoint.isGradualStepFromPoint(point)) {
+        nextSteps.add(nextPoint);
+      }
+    }
+
+    return nextSteps;
+  }
+
   /// Returns all of the trailheads in this map.
   Iterable<Point> get trailheads => map.flattened.where((p) => p.isTrailhead);
 }
