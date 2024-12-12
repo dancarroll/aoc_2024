@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'dart:math' as math;
-
-import 'package:collection/collection.dart';
 
 ///
 Future<List<int>> loadData(File file) async {
