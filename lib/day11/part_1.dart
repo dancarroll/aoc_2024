@@ -8,8 +8,8 @@ Future<int> calculate(File file) async {
   final stones = await loadData(file);
 
   for (int i = 0; i < numBlinks; i++) {
-    print('Processing blink $i: ${stones.length} stones');
-    for (int j = 0; j < stones.length; j++) {
+    final numStones = stones.length;
+    for (int j = 0; j < numStones; j++) {
       final stone = stones[j];
       if (stone == 0) {
         stones[j] = 1;
@@ -20,8 +20,7 @@ Future<int> calculate(File file) async {
         final stoneRight = int.parse(str.substring(midpoint));
 
         stones[j] = stoneLeft;
-        stones.insert(j + 1, stoneRight);
-        j++;
+        stones.add(stoneRight);
       } else {
         stones[j] = stone * 2024;
       }
