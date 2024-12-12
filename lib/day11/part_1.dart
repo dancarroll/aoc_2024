@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'shared.dart';
 
+/// Part 1 is 25 blinks.
 const int numBlinks = 25;
 
 Future<int> calculate(File file) async {
