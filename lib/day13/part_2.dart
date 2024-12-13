@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'shared.dart';
 
+/// Value to add to the x and y coordinates for all prizes.
 const prizeHop = 10_000_000_000_000;
 
 /// Continuing from part 1, except the (x,y) coordinates for the prize each
