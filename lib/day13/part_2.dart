@@ -21,7 +21,7 @@ Future<int> calculate(File file) async {
   //
   // All values except A and B are known. We can isolate one of those variables,
   // to redefine an equation:
-  // 
+  //
   //       P_x - A * a_x
   //   B = -------------
   //            b_x
