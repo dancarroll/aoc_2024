@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'shared.dart';
 
-// TODO(dancarroll): use digit separators after investigating `dart format`
-// error.
-const prizeHop = 10000000000000;
+const prizeHop = 10_000_000_000_000;
 
 /// Continuing from part 1, except the (x,y) coordinates for the prize each
 /// have 10,000,000,000,000 added to them.
