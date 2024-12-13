@@ -20,7 +20,13 @@ Future<int> calculate(File file) async {
   //   A * a_y + B * b_y = P_y
   //
   // All values except A and B are known. We can isolate one of those variables,
-  // to define an equation:
+  // to redefine an equation:
+  // 
+  //       P_x - A * a_x
+  //   B = -------------
+  //            b_x
+  //
+  // Then, insert the B equation into the other equation, and isolate X:
   //
   //              P_x * b_y
   //        P_y - ---------
@@ -29,6 +35,13 @@ Future<int> calculate(File file) async {
   //              a_x * b_y
   //        a_y - ---------
   //                 b_x
+  //
+  // We can simplify the equation further by multiplying the right side by
+  // (b_x)/(b_x) (which equals 1).
+  //
+  //       P_y * b_x - P_x * b_y
+  //   A = ---------------------
+  //       a_y * b_x - a_x * b_y
   //
   // From that, we can solve for A. After we have A, we can construct a simple
   // equation to solve for B:
@@ -46,7 +59,7 @@ Future<int> calculate(File file) async {
     final bx = machine.buttonB.x;
     final by = machine.buttonB.y;
 
-    final a = (py - (px * by) / bx) / (ay - (ax * by) / bx);
+    final a = (py * bx - px * by) / (ay * bx - ax * by);
     final b = (px - a * ax) / bx;
 
     final aInt = toWholeNumber(a);
@@ -65,4 +78,4 @@ Future<int> calculate(File file) async {
 /// Attempts to cast the given number into a whole number. If it is not a
 /// whole number within a small error bound, returns null.
 int? toWholeNumber(double num) =>
-    (num >= 0.0 && (num - num.round()).abs() < 0.01) ? num.round() : null;
+    (num >= 0.0 && (num - num.round()).abs() < 0.001) ? num.round() : null;
