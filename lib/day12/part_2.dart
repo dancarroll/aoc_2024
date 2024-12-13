@@ -64,23 +64,11 @@ AreaAndSides computeFencePriceForRegion(
   bool inBounds(int x, int y) =>
       x >= 0 && y >= 0 && x < map.length && y < map[0].length;
 
-  // Outside corners.
-  // for (final direction in [
-  //   ((0, -1), (-1, 0)),
-  //   ((0, 1), (-1, 0)),
-  //   ((0, 1), (1, 0)),
-  //   ((0, -1), (1, 0)),
-  // ]) {
-  //   final ar = r + direction.$1.$1;
-  //   final ac = c + direction.$1.$2;
-  //   final br = r + direction.$2.$1;
-  //   final bc = c + direction.$2.$2;
-  //   if ((!inBounds(ar, ac) || map[ar][ac] != plant) &&
-  //       (!inBounds(br, bc) || map[br][bc] != plant)) {
-  //     sides++;
-  //   }
-  // }
+  // The number of sides is equal to the sum of the outside corners and
+  // inside corners.
 
+  // Find all outside corners this space represents (for a single isolated
+  // plant, this could be 4 outside corners).
   for (final direction in [
     (-1, -1),
     (-1, 1),
@@ -95,17 +83,8 @@ AreaAndSides computeFencePriceForRegion(
     }
   }
 
-  // if (map[r][c - 1] != plant && map[r - 1][c] != plant) {
-  //   sides++;
-  // } else if (map[r][c + 1] != plant && map[r - 1][c] != plant) {
-  //   sides++;
-  // } else if (map[r][c + 1] != plant && map[r + 1][c] != plant) {
-  //   sides++;
-  // } else if (map[r][c - 1] != plant && map[r + 1][c] != plant) {
-  //   sides++;
-  // }
-
-  // Inside corners.
+  // Then identify all the inside corners. For a given space, this would be
+  // at most one.
   for (final direction in [(1, 1), (1, -1), (-1, -1), (-1, 1)]) {
     final ar = r + direction.$1;
     final ac = c + direction.$2;
