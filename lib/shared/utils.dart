@@ -7,3 +7,13 @@ List<(T, T)> pairs<T>(List<T> items) {
   }
   return records;
 }
+
+List<(T, T)> orderedPairs<T>(List<T> items) {
+  List<(T, T)> records = [];
+  for (final itemA in items) {
+    for (final itemB in items) {
+      records.add((itemA, itemB));
+    }
+  }
+  return records;
+}
