@@ -1,5 +1,6 @@
 import 'package:aoc_2024/lib.dart';
 import 'package:aoc_2024/day12/part_1.dart' as part1;
+import 'package:aoc_2024/day12/part_2.dart' as part2;
 import 'package:test/test.dart';
 
 void main() {
@@ -12,6 +13,10 @@ void main() {
     test('part1', () async {
       expect(await part1.calculate(file), 1930);
     });
+
+    test('part2', () async {
+      expect(await part2.calculate(file), 1206);
+    });
   });
 
   group('real data', tags: 'real-data', () {
@@ -20,6 +25,10 @@ void main() {
 
     test('part1', () async {
       expect(await part1.calculate(file), 1477762);
+    });
+
+    test('part2', () async {
+      expect(await part2.calculate(file), 923480);
     });
   });
 }
