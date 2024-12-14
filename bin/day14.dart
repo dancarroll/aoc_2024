@@ -7,6 +7,5 @@ Future<void> main(List<String> arguments) async {
     day: Day.day14,
     part1: part1.calculate,
     part2: part2.calculate,
-    runSample: false,
   );
 }
