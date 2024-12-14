@@ -21,16 +21,16 @@ Future<int> calculate(File file) async {
 
   for (final robot in data.robots) {
     // First, determine where the robot will be at 100 seconds.
-    final newX = (robot.pos.x + (robot.velo.x * maxSeconds)) % data.width;
-    final newY = (robot.pos.y + (robot.velo.y * maxSeconds)) % data.height;
+    final newPos =
+        robot.posAfter(maxSeconds, height: data.height, width: data.width);
 
     // Then, assign the robot to a quadrant.
     // The quadrant map keys are points normalized to 1. Points along
     // the (0,0) line are recorded here, but will not be counted later.
     quadrants.update(
         Position(
-          directionalDiff(newX, vertSplit),
-          directionalDiff(newY, horiSplit),
+          directionalDiff(newPos.x, vertSplit),
+          directionalDiff(newPos.y, horiSplit),
         ),
         (i) => i + 1,
         ifAbsent: () => 1);

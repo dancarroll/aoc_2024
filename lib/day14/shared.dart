@@ -23,6 +23,14 @@ final class Robot {
 
   Robot(this.pos, this.velo);
 
+  /// Returns the position of the robot after [seconds] after elapsed, when
+  /// moving in a grid sized ([width], [height]).
+  Position posAfter(int seconds, {required int height, required int width}) =>
+      Position(
+        (pos.x + (velo.x * seconds)) % width,
+        (pos.y + (velo.y * seconds)) % height,
+      );
+
   @override
   String toString() => 'Position: $pos, Velocity: $velo';
 }
