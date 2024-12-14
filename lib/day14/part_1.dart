@@ -20,28 +20,23 @@ Future<int> calculate(File file) async {
   final height = file.path.contains('real_data') ? 103 : 7;
   final width = file.path.contains('real_data') ? 101 : 11;
 
-  // First, determine where the robots will be at 100 seconds.
-  for (int seconds = 1; seconds <= maxSeconds; seconds++) {
-    for (final robot in robots) {
-      robot.pos = move(
-        start: robot.pos,
-        velo: robot.velo,
-        height: height,
-        width: width,
-      );
-    }
-  }
-
-  // Now, iterate through the robots and assign them to quadrants.
+  // Prepare for tracking how many robots are in each quadrant.
   int vertSplit = width ~/ 2;
   int horiSplit = height ~/ 2;
-
   Map<Position, int> quadrants = {};
+
   for (final robot in robots) {
+    // First, determine where the robot will be at 100 seconds.
+    final newX = (robot.pos.x + (robot.velo.x * maxSeconds)) % width;
+    final newY = (robot.pos.y + (robot.velo.y * maxSeconds)) % height;
+
+    // Then, assign the robot to a quadrant.
+    // The quadrant map keys are points normalized to 1. Points along
+    // the (0,0) line are recorded here, but will not be counted later.
     quadrants.update(
         Position(
-          directionalDiff(robot.pos.x, vertSplit),
-          directionalDiff(robot.pos.y, horiSplit),
+          directionalDiff(newX, vertSplit),
+          directionalDiff(newY, horiSplit),
         ),
         (i) => i + 1,
         ifAbsent: () => 1);
@@ -58,22 +53,6 @@ Future<int> calculate(File file) async {
   });
 
   return result;
-}
-
-Position move(
-        {required Position start,
-        required Velocity velo,
-        required int height,
-        required int width}) =>
-    Position(wrap(start.x + velo.x, width), wrap(start.y + velo.y, height));
-
-int wrap(int i, int max) {
-  if (i < 0) {
-    return max + i;
-  } else if (i >= max) {
-    return i - max;
-  }
-  return i;
 }
 
 int directionalDiff(int i, int center) {
