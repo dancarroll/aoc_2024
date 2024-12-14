@@ -4,10 +4,19 @@ import 'dart:math';
 typedef Position = Point<int>;
 typedef Velocity = Point<int>;
 
+/// Represents the input data needed to solve the problem.
+final class Data {
+  final int height;
+  final int width;
+  final List<Robot> robots;
+
+  Data(this.robots, {required this.height, required this.width});
+}
+
 /// Represent a single robot's position and velocity.
 final class Robot {
   /// Robot's current position.
-  Position pos;
+  final Position pos;
 
   // Robot's velocity. This can never change.
   final Velocity velo;
@@ -19,7 +28,7 @@ final class Robot {
 }
 
 /// Loads a list of robot positions and velocities from a file.
-Future<List<Robot>> loadData(File file) async {
+Future<Data> loadData(File file) async {
   final lines = await file.readAsLines();
 
   List<Robot> robots = [];
@@ -39,7 +48,13 @@ Future<List<Robot>> loadData(File file) async {
         )));
   }
 
-  return robots;
+  // For some reason, height and width are not in the problem's input.
+  // This varies between the sample and real input, so I hacked in this
+  // quick approach to vary the size of the map.
+  final height = file.path.contains('real_data') ? 103 : 7;
+  final width = file.path.contains('real_data') ? 101 : 11;
+
+  return Data(robots, height: height, width: width);
 }
 
 /// Parses a nullable string as an integer, throwing an error if the string

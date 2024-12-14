@@ -12,23 +12,17 @@ const maxSeconds = 100;
 /// are on the line between two quadrants), and multiply those values
 /// together.
 Future<int> calculate(File file) async {
-  final robots = await loadData(file);
-
-  // For some reason, height and width are not in the problem's input.
-  // This varies between the sample and real input, so I hacked in this
-  // quick approach to vary the size of the map.
-  final height = file.path.contains('real_data') ? 103 : 7;
-  final width = file.path.contains('real_data') ? 101 : 11;
+  final data = await loadData(file);
 
   // Prepare for tracking how many robots are in each quadrant.
-  int vertSplit = width ~/ 2;
-  int horiSplit = height ~/ 2;
+  int vertSplit = data.width ~/ 2;
+  int horiSplit = data.height ~/ 2;
   Map<Position, int> quadrants = {};
 
-  for (final robot in robots) {
+  for (final robot in data.robots) {
     // First, determine where the robot will be at 100 seconds.
-    final newX = (robot.pos.x + (robot.velo.x * maxSeconds)) % width;
-    final newY = (robot.pos.y + (robot.velo.y * maxSeconds)) % height;
+    final newX = (robot.pos.x + (robot.velo.x * maxSeconds)) % data.width;
+    final newY = (robot.pos.y + (robot.velo.y * maxSeconds)) % data.height;
 
     // Then, assign the robot to a quadrant.
     // The quadrant map keys are points normalized to 1. Points along
