@@ -61,7 +61,7 @@ Future<int> calculate(File file) async {
 
 /// Checks to see if there is an empty space along this path. If so, returns
 /// the point where the empty space is.
-/// 
+///
 /// Returns null if encountering a wall before an empty space.
 Point<int>? doesPathContainOpenSpace(
     Warehouse warehouse, Point<int> point, Point<int> direction) {
