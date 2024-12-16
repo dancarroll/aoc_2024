@@ -43,20 +43,15 @@ Future<int> calculate(File file) async {
       case LocationType.robot:
         throw Exception('Should never try to move robot onto robot space');
 
+      case LocationType.boxLeft:
+      case LocationType.boxRight:
+        throw Exception('Two space boxes should not be encountered in part 1');
+
       case LocationType.wall:
     }
   }
 
-  // Now, find all of the boxes, and sum up their GPS coordinates (x + 100y);
-  final boxes =
-      warehouse.map.entries.where((e) => e.value.type == LocationType.box);
-  int sum = 0;
-  for (final box in boxes) {
-    final point = box.key;
-    sum += point.x + 100 * point.y;
-  }
-
-  return sum;
+  return warehouse.sumOfGpsCoordinates(LocationType.box);
 }
 
 /// Checks to see if there is an empty space along this path. If so, returns

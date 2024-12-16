@@ -6,7 +6,9 @@ enum LocationType {
   empty,
   wall,
   box,
-  robot;
+  robot,
+  boxLeft,
+  boxRight;
 }
 
 /// Represents a specific location in the warehouse.
@@ -33,9 +35,12 @@ final class Location {
         LocationType.wall => '#',
         LocationType.robot => '@',
         LocationType.box => 'O',
+        LocationType.boxLeft => '[',
+        LocationType.boxRight => ']',
       };
 }
 
+/// Represents a single instruction for the robot.
 enum Instruction {
   up,
   right,
@@ -76,6 +81,12 @@ final class Warehouse {
   /// assertion.
   Location operator [](Point<int> point) => map[point]!;
 
+  /// Find all of the locations of the given type, and sum up their GPS
+  /// coordinates (x + 100y).
+  int sumOfGpsCoordinates(LocationType type) => map.entries
+      .where((e) => e.value.type == type)
+      .fold(0, (v, e) => v + e.key.x + 100 * e.key.y);
+
   @override
   String toString() {
     StringBuffer sb = StringBuffer();
@@ -91,8 +102,17 @@ final class Warehouse {
 }
 
 /// Loads a representation of a warehouse layout from a file.
-Future<Warehouse> loadData(File file) async {
+///
+/// If [parseAsPart2] is true, the warehouse map is parsed using the changes
+/// in part 2 of the problem: the warehouse is twice as wide. For each space
+/// encountered in the input, create two location of the same type.
+///
+/// The robot is not twice as wide, so the robot remains one space on the
+/// left side (with a new empty space on its right side).
+Future<Warehouse> loadData(File file, {bool parseAsPart2 = false}) async {
   final lines = await file.readAsLines();
+  int numPerInput = parseAsPart2 ? 2 : 1;
+  final part2Diff = Point(1, 0);
 
   Map<Point<int>, Location> map = {};
   Point<int>? robot;
@@ -114,10 +134,23 @@ Future<Warehouse> loadData(File file) async {
     }
 
     if (parsingMap) {
-      for (int x = 0; x < line.length; x++) {
+      for (int x = 0; x < line.length * numPerInput; x += numPerInput) {
         final point = Point(x, y);
-        final location = Location.fromChar(line[x]);
-        map[point] = location;
+        final inputIndex = x ~/ numPerInput;
+        final location = Location.fromChar(line[inputIndex]);
+
+        if (parseAsPart2 && location.type == LocationType.box) {
+          map[point] = Location(LocationType.boxLeft);
+          map[point + part2Diff] = Location(LocationType.boxRight);
+        } else if (parseAsPart2 && location.type == LocationType.robot) {
+          map[point] = location;
+          map[point + part2Diff] = Location(LocationType.empty);
+        } else if (parseAsPart2) {
+          map[point] = location;
+          map[point + part2Diff] = Location.fromChar(line[inputIndex]);
+        } else {
+          map[point] = location;
+        }
 
         // Save the initial position of the robot, so we can easily start
         // procesing its moves later.
@@ -133,5 +166,11 @@ Future<Warehouse> loadData(File file) async {
     }
   }
 
-  return Warehouse(map, robot!, instructions, height: height, width: width);
+  return Warehouse(
+    map,
+    robot!,
+    instructions,
+    height: height,
+    width: parseAsPart2 ? width * 2 : width,
+  );
 }
