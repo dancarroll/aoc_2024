@@ -1,3 +1,5 @@
+const int maxInt = -1 >>> 1;
+
 List<(T, T)> pairs<T>(List<T> items) {
   List<(T, T)> records = [];
   for (int i = 0; i < items.length - 1; i++) {

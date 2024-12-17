@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+/// Represents a location within the maze.
 enum Location {
   wall,
   empty,
@@ -8,14 +9,21 @@ enum Location {
   end;
 }
 
+/// Represents a maze in the Reindeer Olympics.
 final class Maze {
+  /// Maze representation, which is just a map of points to their types.
   final Map<Point<int>, Location> map;
+
+  /// Reference to the starting point.
   final Point<int> start;
+
+  /// Reference to the ending point.
   final Point<int> end;
 
   Maze(this.map, this.start, this.end);
 }
 
+/// Loads the data for a maze from a file.
 Future<Maze> loadData(File file) async {
   final lines = await file.readAsLines();
 
@@ -34,6 +42,7 @@ Future<Maze> loadData(File file) async {
       };
       maze[Point(x, y)] = location;
 
+      // If we processed a start/end, save it off.
       if (location == Location.start) {
         assert(start == null, 'More than one start found');
         start = Point(x, y);

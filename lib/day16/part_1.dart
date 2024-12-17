@@ -1,15 +1,17 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
+import 'package:aoc_2024/lib.dart';
 
 import 'shared.dart';
 
+/// Represents a step in the maze.
 enum Step {
   straight,
   turn;
 }
 
+/// Represents the heading of a reindeer in the maze.
 enum Heading {
   up,
   right,
@@ -24,6 +26,7 @@ enum Heading {
         right => Point(point.x + 1, point.y)
       };
 
+  /// Returns a new heading representing a clockwise 90 degree rotation.
   Heading rotateClockwise() {
     var nextIndex = index + 1;
     if (nextIndex >= Heading.values.length) {
@@ -32,6 +35,7 @@ enum Heading {
     return Heading.values[nextIndex];
   }
 
+  /// Returns a new heading representing a counter-clockwise 90 degree rotation.
   Heading rotateCounterclockwise() {
     var nextIndex = index - 1;
     if (nextIndex < 0) {
@@ -41,22 +45,41 @@ enum Heading {
   }
 }
 
+/// Represents a location and heading of a reindeer in the maze.
 typedef ReindeerLocation = ({Heading heading, Point<int> point});
+
+/// Represents a potential next step along a path.
 typedef NextStep = ({Step step, ReindeerLocation location});
 
-int pathCounter = 0;
-
+/// Represents a candidate for the best path in the maze.
 final class CandidatePath implements Comparable<CandidatePath> {
+  /// Static counter the increments for every created candidate path.
+  /// This is used for a simple comparison during equality checking.
+  static int _pathCounter = 0;
+
+  /// Set of all points visited in this path so far.
   final Set<Point<int>> visited;
+
+  /// List of steps taken to get to the current position.
   final List<Step> steps;
+
+  /// Current position and heading of the reindeer along this path.
   ReindeerLocation current;
+
+  /// Unique index of the path
   final int _index;
+
+  /// Current score of the path. This is updated during each move,
+  /// rather than being calculated on the fly, since the score is used
+  /// for sorting the candidate list.
   int _score;
 
   CandidatePath(this.visited, this.steps, this.current, {score = 0})
-      : _index = pathCounter++,
+      : _index = _pathCounter++,
         _score = score;
 
+  /// Creates a new candidate from an existing candidate, by copying its
+  /// list of visited points and steps.
   factory CandidatePath.fromCandidate(CandidatePath other) {
     return CandidatePath(
       {...other.visited},
@@ -66,11 +89,13 @@ final class CandidatePath implements Comparable<CandidatePath> {
     );
   }
 
-  // int get score => steps.fold(
-  //     0, (v, e) => v + switch (e) { Step.straight => 1, Step.turn => 1000 });
+  /// Returns the current score of this path.
   int get score => _score;
 
+  /// Incorporates the given [nextStep] along this path, including updating
+  /// the path score.
   void step(NextStep nextStep) {
+    // Track that the next position has been visited, and is the new current.
     current = nextStep.location;
     visited.add(nextStep.location.point);
 
@@ -83,6 +108,7 @@ final class CandidatePath implements Comparable<CandidatePath> {
         // into the new location.
         steps.add(nextStep.step);
         steps.add(Step.straight);
+        // Add 1001 to the score: 1000 for the turn, 1 for the straight move.
         _score += 1001;
     }
   }
@@ -91,41 +117,11 @@ final class CandidatePath implements Comparable<CandidatePath> {
   int get hashCode => _index;
 
   @override
-  bool operator ==(Object other) {
-    if (other is CandidatePath) {
-      return _index == other._index;
-    } else {
-      return false;
-    }
-  }
+  bool operator ==(Object other) =>
+      (other is CandidatePath) ? _index == other._index : false;
 
   @override
-  int compareTo(CandidatePath other) {
-    return score.compareTo(other.score);
-  }
-}
-
-final class SortedList<T extends Comparable> extends DelegatingList<T> {
-  SortedList() : super(<T>[]);
-
-  @override
-  void add(T value) {
-    int i = 0;
-    while (i < super.length && super[i].compareTo(value) < 0) {
-      i++;
-    }
-    super.insert(i, value);
-  }
-
-  @override
-  void addAll(Iterable<T> iterable) {
-    throw UnimplementedError();
-  }
-
-  @override
-  List<T> operator +(List<T> other) {
-    throw UnimplementedError();
-  }
+  int compareTo(CandidatePath other) => score.compareTo(other.score);
 }
 
 /// --- Day 16: Reindeer Maze ---
@@ -134,35 +130,24 @@ final class SortedList<T extends Comparable> extends DelegatingList<T> {
 Future<int> calculate(File file) async {
   final maze = await loadData(file);
 
-  print(maze.start);
-  print(maze.map.keys.length);
-
-  // Prime the list of candidate paths.
-  final paths = SortedList<CandidatePath>();
-  for (final nextStep in getValidStepsFromPoint(
-    maze,
-    (heading: Heading.right, point: maze.start),
-    {maze.start},
-  )) {
-    final path = CandidatePath(
-        {maze.start}, [], (heading: Heading.right, point: maze.start));
-    path.step(nextStep);
-    paths.add(path);
-  }
+  // Prime the list of candidate paths with the starting point.
+  final paths = [
+    CandidatePath({maze.start}, [], (heading: Heading.right, point: maze.start))
+  ];
 
   // For each point encountered, store the lowest score so far.
   // If we ever have a path that reaches a point with a higher score,
   // that path can be discarded.
   Map<Point<int>, int> lowestPointScores = {};
 
-  bool finished = false;
   mainController:
-  while (!finished) {
-    //finished = true;
+  while (paths.isNotEmpty) {
+    // Keep track of any paths we encounter that are no longer relevant.
     List<CandidatePath> pathsToPrune = [];
 
-    //for (int pathIndex = 0; pathIndex < paths.length; pathIndex++) {
-    //final path = paths[pathIndex];
+    // In this iteration, progress each of the lowest score paths by one step.
+    // This is a slight optimization, as it avoids multiple expensive sorts in
+    // the case that there are many paths with the lowest score so far.
     int lowestScore = paths[0].score;
     final currIterationPaths = <CandidatePath>[];
     int i = 0;
@@ -172,31 +157,28 @@ Future<int> calculate(File file) async {
     }
 
     for (final path in currIterationPaths) {
-      //final path = paths[0];
-
+      // We are iterating along the lowest score paths. If this path has already
+      // reached the end, the means we are at the end! Break out of the loop.
       if (path.current.point == maze.end) {
-        //continue;
         break mainController;
       }
 
-      if (lowestPointScores.containsKey(path.current.point)) {
-        final lowestScore = lowestPointScores[path.current.point]!;
-        // assert(lowestScore != path.score,
-        //     "Found another path with same score to point");
-        if (lowestScore < path.score) {
-          pathsToPrune.add(path);
-        } else if (lowestScore < path.score) {
-          lowestPointScores[path.current.point] = path.score;
-        }
-      } else {
+      // Determine whether we have already reached the path's current point
+      // at a cheaper cost. If so, this path cannot be the best path, so
+      // mark it to be discarded.
+      //
+      // If the score is a tie, keep both paths.
+      final lowestScore = lowestPointScores[path.current.point] ?? maxInt;
+      if (lowestScore < path.score) {
+        pathsToPrune.add(path);
+      } else if (lowestScore > path.score) {
         lowestPointScores[path.current.point] = path.score;
       }
 
+      // Find all of the possible next steps along the current path.
       final nextSteps =
-          getValidStepsFromPoint(maze, path.current, path.visited);
+          _getValidStepsFromPoint(maze, path.current, path.visited);
       if (nextSteps.isNotEmpty) {
-        finished = false;
-
         // For any additional valid steps, branch off a new candidate path.
         for (int i = 1; i < nextSteps.length; i++) {
           final newCandidate = CandidatePath.fromCandidate(path);
@@ -209,50 +191,53 @@ Future<int> calculate(File file) async {
         // above copies this path's list of steps/visited.
         path.step(nextSteps[0]);
       } else {
-        // No additional steps along this path, so prune it.
+        // No additional steps along this path, so prune it. A path that already
+        // reached the end would have been checked earlier.
         pathsToPrune.add(path);
       }
     }
 
+    // Remove paths that are no longer potential best paths.
     for (final pathToPrune in pathsToPrune) {
       paths.remove(pathToPrune);
     }
-    paths.sort();
 
-    //finished = true;
+    // Sort the paths. This is necessary, over using some sort of SortedList
+    // data structure, because the scores in the CandidatePaths change
+    // over time.
+    paths.sort();
   }
 
-  print(paths.length);
-  //paths.sort((a, b) => a.score.compareTo(b.score));
-
-  print('Lowest score: ${paths[0].score}');
-  print('Highest score: ${paths[paths.length - 1].score}');
-
-  final bestPath = paths[0];
-  print('Best: ');
-  print(
-      '  - Num straight: ${bestPath.steps.where((s) => s == Step.straight).length}');
-  print('  - Num turns: ${bestPath.steps.where((s) => s == Step.turn).length}');
-  print('');
-  print(bestPath.steps);
-
-  return 0;
+  return paths[0].score;
 }
 
-List<NextStep> getValidStepsFromPoint(
+/// Determines all of the valid next steps from a given path.
+///
+/// Rather than accepting a [CandidatePath], this function just accepts the
+/// reindeer position and a set of visited points.
+///
+/// In reality, this function should never return more than 3 points (since
+/// only moves in cardinal directions are allowed, and one of those 4 directions
+/// would have already been visited).
+List<NextStep> _getValidStepsFromPoint(
     Maze maze, ReindeerLocation current, Set<Point<int>> visited) {
+  // Given the only potential moves (straight, clockwise, counterclockwise)
   return [
     (current.heading, Step.straight),
     (current.heading.rotateClockwise(), Step.turn),
     (current.heading.rotateCounterclockwise(), Step.turn),
   ]
+      // Generate the corresponding steps.
       .map((h) => (
             step: h.$2,
             location: (heading: h.$1, point: h.$1.move(current.point))
           ))
+      // Filter out any step that would visit a visited point.
       .where((ns) => !visited.contains(ns.location.point))
+      // Limit to steps that would land on empty spaces or the end.
       .where((ns) =>
           maze.map[ns.location.point] == Location.empty ||
           maze.map[ns.location.point] == Location.end)
+      // Convert to a list (since it will later be indexed).
       .toList();
 }
