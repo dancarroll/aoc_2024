@@ -146,8 +146,17 @@ List<CandidatePath> findBestPaths(Maze maze, {bool stopAfterFirst = false}) {
   // direction.
   Map<ReindeerLocation, int> lowestPointScores = {};
 
+  // Iterate through all paths, until one of the following conditions occurs:
+  // - We run out of paths: this can occur as paths are moved to completed,
+  //   or pruned because they are guaranteed to not produce a lower cost path.
+  // - We have a completed path of lower cost than all of the pending paths.
+  //   Since paths are maintained in a sorted order, we just need to check the
+  //   first pending path.
+  // - If [stopAfterFirst] is true, the inner loop logic will short-circuit as
+  //   soon as the first completed path is detected.
   mainController:
-  while (paths.isNotEmpty) {
+  while (paths.isNotEmpty &&
+      (completedPaths.isEmpty || completedPaths[0].score > paths[0].score)) {
     // Keep track of any paths we encounter that are no longer relevant.
     List<CandidatePath> pathsToPrune = [];
 
@@ -219,7 +228,6 @@ List<CandidatePath> findBestPaths(Maze maze, {bool stopAfterFirst = false}) {
     paths.sort();
   }
 
-  completedPaths.sort();
   return completedPaths;
 }
 
