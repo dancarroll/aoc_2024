@@ -9,10 +9,12 @@ import 'shared.dart';
 /// Given the starting values for the registers (which can hold an arbitrarily
 /// large value, not limited to 3 bits), and a list of instructions, run the
 /// program to completion and return the output.
-Future<int> calculate(File file) async {
+Future<String> calculate(File file) async {
   final computer = await loadData(file);
-  print(computer.execute());
+  return executeComputer(computer);
+}
 
-  // TODO(dancarroll): Update infra to have days returns strings not ints.
-  return 0;
+/// Executes the given computer. Exposed as a top-level function for tests.
+String executeComputer(Computer computer) {
+  return computer.execute();
 }

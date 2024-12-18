@@ -141,7 +141,11 @@ final class Computer {
 /// Loads the initial state of the computer registers and the loaded program.
 Future<Computer> loadData(File file) async {
   final lines = await file.readAsLines();
+  return loadDataFromLines(lines);
+}
 
+/// Loads the data from a list of lines, useful for tests providing other input.
+Computer loadDataFromLines(List<String> lines) {
   final a = int.parse(lines[0].split(' ')[2]);
   final b = int.parse(lines[1].split(' ')[2]);
   final c = int.parse(lines[2].split(' ')[2]);

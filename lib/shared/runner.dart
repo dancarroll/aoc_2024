@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'resources.dart';
 
-typedef DayFunction = Future<int> Function(File);
+typedef DayFunction = Future<dynamic> Function(File);
 
 final _stopwatch = Stopwatch();
 
