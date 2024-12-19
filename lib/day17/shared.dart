@@ -68,6 +68,9 @@ final class Computer {
 
   Computer(this.a, this.b, this.c, this.instructions);
 
+  factory Computer.fromComputer(Computer other) =>
+      Computer(other.a, other.b, other.c, other.instructions);
+
   /// Executes the program to completiong, and returns the result.
   String execute() {
     List<int> result = [];
