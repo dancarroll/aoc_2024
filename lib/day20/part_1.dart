@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
-
 import 'shared.dart';
 
 /// --- Day 20: Race Condition ---
@@ -16,9 +14,12 @@ import 'shared.dart';
 Future<int> calculate(File file) async {
   final maze = await loadData(file);
 
+  // First, find the path with no cheat.
   final paths = findAllPaths(maze);
-  final longestPath = paths.map((p) => p.score).max;
+  final path = paths[0];
 
   final savingsTarget = file.path.contains('real_data') ? 100 : 20;
-  return paths.where((p) => (longestPath - p.score) >= savingsTarget).length;
+  return uniqueCheatSavings(path.visited, 2)
+      .where((x) => x >= savingsTarget)
+      .length;
 }

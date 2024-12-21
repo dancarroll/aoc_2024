@@ -1,6 +1,12 @@
 import 'dart:io';
 import 'dart:math';
 
+extension ManhattanDistance on Point<int> {
+  int manhattanDistance(Point<int> other) {
+    return (x - other.x).abs() + (y - other.y).abs();
+  }
+}
+
 /// Represents a location within the maze.
 enum Location {
   wall,
@@ -46,10 +52,7 @@ final class CandidatePath implements Comparable<CandidatePath> {
   static int _pathCounter = 0;
 
   /// Set of all points visited in this path so far.
-  final Set<Point<int>> visited;
-
-  /// True if this path has already used a cheat (went through wall segment).
-  bool usedCheat;
+  final List<Point<int>> visited;
 
   /// Current position along this path.
   Point<int> current;
@@ -57,16 +60,14 @@ final class CandidatePath implements Comparable<CandidatePath> {
   /// Unique index of the path
   final int _index;
 
-  CandidatePath(this.visited, this.current, {this.usedCheat = false})
-      : _index = _pathCounter++;
+  CandidatePath(this.visited, this.current) : _index = _pathCounter++;
 
   /// Creates a new candidate from an existing candidate, by copying its
   /// list of visited points and steps.
   factory CandidatePath.fromCandidate(CandidatePath other) {
     return CandidatePath(
-      {...other.visited},
+      [...other.visited],
       other.current,
-      usedCheat: other.usedCheat,
     );
   }
 
@@ -75,15 +76,10 @@ final class CandidatePath implements Comparable<CandidatePath> {
 
   /// Incorporates the given [nextStep] along this path, including updating
   /// the path score.
-  void step(NextStep nextStep) {
-    if (nextStep.isCheat) {
-      assert(!usedCheat, 'Using a second cheat!');
-      usedCheat = true;
-    }
-
+  void step(Point<int> point) {
     // Track that the next position has been visited, and is the new current.
-    current = nextStep.point;
-    visited.add(nextStep.point);
+    current = point;
+    visited.add(point);
   }
 
   @override
@@ -101,7 +97,7 @@ final class CandidatePath implements Comparable<CandidatePath> {
 List<CandidatePath> findAllPaths(Maze maze) {
   // Prime the list of candidate paths with the starting point.
   final paths = [
-    CandidatePath({maze.start}, maze.start)
+    CandidatePath([maze.start], maze.start)
   ];
   final completedPaths = <CandidatePath>[];
 
@@ -118,10 +114,7 @@ List<CandidatePath> findAllPaths(Maze maze) {
 
     // Find all of the possible next steps along the current path.
     final nextSteps = _getValidStepsFromPoint(
-        maze: maze,
-        current: path.current,
-        visited: path.visited,
-        allowCheat: !path.usedCheat);
+        maze: maze, current: path.current, visited: path.visited);
     if (nextSteps.isNotEmpty) {
       // For any additional valid steps, branch off a new candidate path.
       for (int i = 1; i < nextSteps.length; i++) {
@@ -144,8 +137,6 @@ List<CandidatePath> findAllPaths(Maze maze) {
   return completedPaths;
 }
 
-typedef NextStep = ({Point<int> point, bool isCheat});
-
 /// Determines all of the valid next steps from a given path.
 ///
 /// Rather than accepting a [CandidatePath], this function just accepts the
@@ -154,11 +145,10 @@ typedef NextStep = ({Point<int> point, bool isCheat});
 /// In reality, this function should never return more than 3 points (since
 /// only moves in cardinal directions are allowed, and one of those 4 directions
 /// would have already been visited).
-List<NextStep> _getValidStepsFromPoint(
+List<Point<int>> _getValidStepsFromPoint(
     {required Maze maze,
     required Point<int> current,
-    required Set<Point<int>> visited,
-    required bool allowCheat}) {
+    required List<Point<int>> visited}) {
   // Given the only potential moves (straight, clockwise, counterclockwise)
   return Heading.values
       .map((h) => h.move(current))
@@ -166,18 +156,43 @@ List<NextStep> _getValidStepsFromPoint(
       .where((p) => maze.map.containsKey(p))
       // Filter out any step that would visit a visited point.
       .where((p) => !visited.contains(p))
-      // For each point, determine whether it would require use of a cheat.
-      .map((p) => (point: p, isCheat: maze.map[p] == Location.wall))
       // Limit to steps that would land on empty spaces or the end.
       // If a cheat is allowed, also include spaces that would move onto a wall.
-      .where((ns) => switch (maze.map[ns.point]) {
+      .where((p) => switch (maze.map[p]) {
             Location.empty => true,
             Location.end => true,
-            Location.wall => allowCheat,
             _ => false,
           })
       // Convert to a list (since it will later be indexed).
       .toList();
+}
+
+/// Compute the savings from each unique cheat.
+List<int> uniqueCheatSavings(List<Point<int>> path, int maxCheatLength) {
+  // Keep track of the length to the end from each point.
+  Map<Point<int>, int> pathLength = {};
+  for (int i = 0; i < path.length; i++) {
+    pathLength[path[i]] = path.length - i - 1;
+  }
+
+  // Now, iterate through each potential cheat from each point on the map, and
+  // calculate the savings.
+  List<int> savings = [];
+  for (final point in path) {
+    for (final jumpToPoint in path
+        .where((p) =>
+            p.manhattanDistance(point) >= 2 &&
+            p.manhattanDistance(point) <= maxCheatLength)
+        .where((p) => pathLength[p]! < (path.length - 1))) {
+      final savingsWithCheat = pathLength[point]! -
+          pathLength[jumpToPoint]! -
+          point.manhattanDistance(jumpToPoint);
+      if (savingsWithCheat > 0) {
+        savings.add(savingsWithCheat);
+      }
+    }
+  }
+  return savings;
 }
 
 /// Loads the data for a maze from a file.
