@@ -71,7 +71,7 @@ final class CandidatePath implements Comparable<CandidatePath> {
   }
 
   /// Returns the current score of this path.
-  int get score => visited.length;
+  int get score => visited.length - 1;
 
   /// Incorporates the given [nextStep] along this path, including updating
   /// the path score.
@@ -108,63 +108,37 @@ List<CandidatePath> findAllPaths(Maze maze) {
   // Iterate until all paths have been processed (since we are not stopping once
   // the shortest path has been identified).
   while (paths.isNotEmpty) {
-    // Keep track of any paths we encounter that are no longer relevant.
-    List<CandidatePath> pathsToPrune = [];
+    final path = paths[0];
 
-    // In this iteration, progress each of the lowest score paths by one step.
-    // This is a slight optimization, as it avoids multiple expensive sorts in
-    // the case that there are many paths with the lowest score so far.
-    int lowestScore = paths[0].score;
-    final currIterationPaths = <CandidatePath>[];
-    int i = 0;
-    while (i < paths.length && paths[i].score == lowestScore) {
-      currIterationPaths.add(paths[i]);
-      i++;
+    if (path.current == maze.end) {
+      paths.remove(path);
+      completedPaths.add(path);
+      continue;
     }
 
-    for (final path in currIterationPaths) {
-      // We are iterating along the lowest score path. If this path has already
-      // reached the end, the means we are at the end! Break out of the loop.
-      if (path.current == maze.end) {
-        pathsToPrune.add(path);
-        completedPaths.add(path);
-        continue;
+    // Find all of the possible next steps along the current path.
+    final nextSteps = _getValidStepsFromPoint(
+        maze: maze,
+        current: path.current,
+        visited: path.visited,
+        allowCheat: !path.usedCheat);
+    if (nextSteps.isNotEmpty) {
+      // For any additional valid steps, branch off a new candidate path.
+      for (int i = 1; i < nextSteps.length; i++) {
+        final newCandidate = CandidatePath.fromCandidate(path);
+        newCandidate.step(nextSteps[i]);
+        paths.add(newCandidate);
       }
 
-      // Find all of the possible next steps along the current path.
-      final nextSteps = _getValidStepsFromPoint(
-          maze: maze,
-          current: path.current,
-          visited: path.visited,
-          allowCheat: !path.usedCheat);
-      if (nextSteps.isNotEmpty) {
-        // For any additional valid steps, branch off a new candidate path.
-        for (int i = 1; i < nextSteps.length; i++) {
-          final newCandidate = CandidatePath.fromCandidate(path);
-          newCandidate.step(nextSteps[i]);
-          paths.add(newCandidate);
-        }
-
-        // Use the first step option on the current candidate path.
-        // This is done after adding the new candidate paths, since the logic
-        // above copies this path's list of steps/visited.
-        path.step(nextSteps[0]);
-      } else {
-        // No additional steps along this path, so prune it. A path that already
-        // reached the end would have been checked earlier.
-        pathsToPrune.add(path);
-      }
+      // Use the first step option on the current candidate path.
+      // This is done after adding the new candidate paths, since the logic
+      // above copies this path's list of steps/visited.
+      path.step(nextSteps[0]);
+    } else {
+      // No additional steps along this path, so prune it. A path that already
+      // reached the end would have been checked earlier.
+      paths.remove(path);
     }
-
-    // Remove paths that are no longer potential best paths.
-    for (final pathToPrune in pathsToPrune) {
-      paths.remove(pathToPrune);
-    }
-
-    // Sort the paths. This is necessary, over using some sort of SortedList
-    // data structure, because the scores in the CandidatePaths change
-    // over time.
-    paths.sort();
   }
 
   return completedPaths;
