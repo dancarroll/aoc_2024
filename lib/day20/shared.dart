@@ -45,96 +45,22 @@ enum Heading {
       };
 }
 
-/// Represents a candidate for the best path in the maze.
-final class CandidatePath implements Comparable<CandidatePath> {
-  /// Static counter the increments for every created candidate path.
-  /// This is used for a simple comparison during equality checking.
-  static int _pathCounter = 0;
-
-  /// Set of all points visited in this path so far.
-  final List<Point<int>> visited;
-
-  /// Current position along this path.
-  Point<int> current;
-
-  /// Unique index of the path
-  final int _index;
-
-  CandidatePath(this.visited, this.current) : _index = _pathCounter++;
-
-  /// Creates a new candidate from an existing candidate, by copying its
-  /// list of visited points and steps.
-  factory CandidatePath.fromCandidate(CandidatePath other) {
-    return CandidatePath(
-      [...other.visited],
-      other.current,
-    );
-  }
-
-  /// Returns the current score of this path.
-  int get score => visited.length - 1;
-
-  /// Incorporates the given [nextStep] along this path, including updating
-  /// the path score.
-  void step(Point<int> point) {
-    // Track that the next position has been visited, and is the new current.
-    current = point;
-    visited.add(point);
-  }
-
-  @override
-  int get hashCode => _index;
-
-  @override
-  bool operator ==(Object other) =>
-      (other is CandidatePath) ? _index == other._index : false;
-
-  @override
-  int compareTo(CandidatePath other) => score.compareTo(other.score);
-}
-
 /// Finds all of the lowest cost paths through the given maze.
-List<CandidatePath> findAllPaths(Maze maze) {
+List<Point<int>> findSinglePath(Maze maze) {
   // Prime the list of candidate paths with the starting point.
-  final paths = [
-    CandidatePath([maze.start], maze.start)
-  ];
-  final completedPaths = <CandidatePath>[];
+  List<Point<int>> path = [maze.start];
 
   // Iterate until all paths have been processed (since we are not stopping once
   // the shortest path has been identified).
-  while (paths.isNotEmpty) {
-    final path = paths[0];
-
-    if (path.current == maze.end) {
-      paths.remove(path);
-      completedPaths.add(path);
-      continue;
-    }
-
+  while (!path.contains(maze.end)) {
     // Find all of the possible next steps along the current path.
-    final nextSteps = _getValidStepsFromPoint(
-        maze: maze, current: path.current, visited: path.visited);
-    if (nextSteps.isNotEmpty) {
-      // For any additional valid steps, branch off a new candidate path.
-      for (int i = 1; i < nextSteps.length; i++) {
-        final newCandidate = CandidatePath.fromCandidate(path);
-        newCandidate.step(nextSteps[i]);
-        paths.add(newCandidate);
-      }
-
-      // Use the first step option on the current candidate path.
-      // This is done after adding the new candidate paths, since the logic
-      // above copies this path's list of steps/visited.
-      path.step(nextSteps[0]);
-    } else {
-      // No additional steps along this path, so prune it. A path that already
-      // reached the end would have been checked earlier.
-      paths.remove(path);
-    }
+    final nextSteps =
+        _getValidStepsFromPoint(maze: maze, current: path.last, visited: path);
+    assert(nextSteps.length == 1, 'Expect only one next step');
+    path.add(nextSteps.first);
   }
 
-  return completedPaths;
+  return path;
 }
 
 /// Determines all of the valid next steps from a given path.
@@ -145,7 +71,7 @@ List<CandidatePath> findAllPaths(Maze maze) {
 /// In reality, this function should never return more than 3 points (since
 /// only moves in cardinal directions are allowed, and one of those 4 directions
 /// would have already been visited).
-List<Point<int>> _getValidStepsFromPoint(
+Iterable<Point<int>> _getValidStepsFromPoint(
     {required Maze maze,
     required Point<int> current,
     required List<Point<int>> visited}) {
@@ -162,9 +88,7 @@ List<Point<int>> _getValidStepsFromPoint(
             Location.empty => true,
             Location.end => true,
             _ => false,
-          })
-      // Convert to a list (since it will later be indexed).
-      .toList();
+          });
 }
 
 /// Compute the savings from each unique cheat.
