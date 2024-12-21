@@ -18,6 +18,7 @@ import 'day17.dart' as day17;
 import 'day18.dart' as day18;
 import 'day19.dart' as day19;
 import 'day20.dart' as day20;
+import 'day21.dart' as day21;
 
 void main(List<String> arguments) async {
   print('');
@@ -42,6 +43,7 @@ void main(List<String> arguments) async {
     day18.main,
     day19.main,
     day20.main,
+    day21.main,
   ]) {
     await day(arguments);
     print('');
