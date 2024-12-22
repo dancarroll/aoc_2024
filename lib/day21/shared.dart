@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
+import 'package:collection/collection.dart' as collection;
 import 'package:quiver/collection.dart';
 
 final class NumericKeypad {
@@ -37,10 +37,11 @@ final class NumericKeypad {
 
   /// Returns all of the combinations of steps from the starting point to given
   /// keypad character.
-  List<List<DirectionalButton>> stepCombinationsTo(
-          Point<int> starting, String char) =>
+  Iterable<DirectionList> stepCombinationsTo(Point<int> starting, String char,
+          {required bool useNewSequenceGenerator}) =>
       generateStepCombinationsTo(
-          starting, layout.inverse[char]!, layout, (c) => c != 'X');
+          starting, layout.inverse[char]!, layout, (c) => c != 'X',
+          useNewSequenceGenerator: useNewSequenceGenerator);
 }
 
 typedef Direction = ({DirectionalButton direction, Point<int> step});
@@ -98,22 +99,103 @@ final class DirectionalKeypad {
       layout.inverse[button]!;
 
   /// Returns all of the combinations of steps from
-  Iterable<List<DirectionalButton>> stepCombinationsTo(
-          Point<int> starting, DirectionalButton target) =>
+  Set<DirectionList> stepCombinationsTo(
+          Point<int> starting, DirectionalButton target,
+          {required bool useNewSequenceGenerator}) =>
       generateStepCombinationsTo(starting, layout.inverse[target]!, layout,
-          (button) => button != DirectionalButton.none);
+          (button) => button != DirectionalButton.none,
+          useNewSequenceGenerator: useNewSequenceGenerator);
+}
+
+final class DirectionList extends collection.DelegatingList<DirectionalButton> {
+  DirectionList(super.base);
+
+  List<DirectionalButton> get _listBase => super.toList();
+
+  @override
+  bool operator ==(Object other) {
+    if (other is DirectionList) {
+      return toString() == other.toString();
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => Object.hashAll(this);
+
+  @override
+  String toString() => directionsToString(_listBase);
 }
 
 /// Returns all of the combinations of steps from
-List<List<DirectionalButton>> generateStepCombinationsTo<T>(Point<int> starting,
-    Point<int> target, BiMap<Point<int>, T> map, bool Function(T) isValid) {
+Set<DirectionList> generateStepCombinationsTo<T>(Point<int> starting,
+    Point<int> target, BiMap<Point<int>, T> map, bool Function(T) isValid,
+    {required bool useNewSequenceGenerator}) {
+  if (useNewSequenceGenerator) {
+    final diff = target - starting;
+    final xMoves = List.generate(diff.x.abs(),
+        (_) => (diff.x < 0) ? DirectionalButton.left : DirectionalButton.right);
+    final yMoves = List.generate(diff.y.abs(),
+        (_) => (diff.y < 0) ? DirectionalButton.up : DirectionalButton.down);
+
+    final type = map[target]!;
+
+    var skipXMoveFirst = false;
+    if (type is String && starting.y == 3 && diff.x < 0) {
+      skipXMoveFirst = true;
+    } else if (type is DirectionalButton && starting.y == 0 && diff.x < 0) {
+      skipXMoveFirst = true;
+    }
+
+    var skipYMoveFirst = false;
+    if (type is String && starting.x == 0 && diff.y > 0) {
+      skipYMoveFirst = true;
+    } else if (type is DirectionalButton && starting.x == 0 && diff.y < 0) {
+      skipYMoveFirst = true;
+    }
+
+    late Set<DirectionList> alternateList;
+    if (diff.x < 0 && !skipXMoveFirst) {
+      alternateList = {
+        skipXMoveFirst
+            ? DirectionList([])
+            : DirectionList([...xMoves, ...yMoves, DirectionalButton.activate]),
+      };
+    } else {
+      alternateList = {
+        skipXMoveFirst
+            ? DirectionList([])
+            : DirectionList([...xMoves, ...yMoves, DirectionalButton.activate]),
+        skipYMoveFirst
+            ? DirectionList([])
+            : DirectionList([...yMoves, ...xMoves, DirectionalButton.activate]),
+      };
+    }
+
+    // final alternateList = {
+    //   skipXMoveFirst
+    //       ? DirectionList([])
+    //       : DirectionList([...xMoves, ...yMoves, DirectionalButton.activate]),
+    //   skipYMoveFirst
+    //       ? DirectionList([])
+    //       : DirectionList([...yMoves, ...xMoves, DirectionalButton.activate]),
+    // };
+
+    // printDirectionLists(
+    //     'Correct', paths.where((p) => p.$1 == target).map((p) => p.$2).toList());
+    // printDirectionLists('Simplified',
+    //     paths.where((p) => p.$1 == target).map((p) => p.$2).toList());
+
+    return alternateList..removeWhere((l) => l.isEmpty);
+  }
+
   // Store a list of paths. Each path needs to keep track of its current
   // location, and list of directions so far.
-  List<(Point<int>, List<DirectionalButton>)> paths = [];
-  paths.add((starting, []));
+  List<(Point<int>, DirectionList)> paths = [];
+  paths.add((starting, DirectionList([])));
 
   while (paths.none((p) => p.$1 == target)) {
-    List<(Point<int>, List<DirectionalButton>)> newPaths = [];
+    List<(Point<int>, DirectionList)> newPaths = [];
     // Increment each path by one space.
     for (final path in paths) {
       for (final step in DirectionalButton.directions) {
@@ -126,7 +208,10 @@ List<List<DirectionalButton>> generateStepCombinationsTo<T>(Point<int> starting,
             isValid(buttonAtLocation) &&
             path.$1.squaredDistanceTo(target) >
                 newLocation.squaredDistanceTo(target)) {
-          newPaths.add((path.$1 + step.step, [...path.$2, step.direction]));
+          newPaths.add((
+            path.$1 + step.step,
+            DirectionList([...path.$2, step.direction])
+          ));
         }
       }
     }
@@ -138,27 +223,29 @@ List<List<DirectionalButton>> generateStepCombinationsTo<T>(Point<int> starting,
       .where((p) => p.$1 == target)
       .map((p) => p.$2)
       .map((p) => p..add(DirectionalButton.activate))
-      .toList();
+      .toSet();
 }
 
-int shortestSequence(String code) {
+int shortestSequence(String code, int numDirectionalKeypads,
+    {bool useNewSequenceGenerator = false}) {
   final numericKeypad = NumericKeypad.standard();
   final directionalKeypad = DirectionalKeypad.standard();
 
-  List<List<DirectionalButton>> numericSteps = [];
+  Set<DirectionList> numericSteps = {};
 
   // Find how to move in the numeric keypad
   Point<int> numericKeypadPointer = numericKeypad.location;
   for (final char in code.split('')) {
-    List<List<DirectionalButton>> newList = [];
-    final numericStepsForChar =
-        numericKeypad.stepCombinationsTo(numericKeypadPointer, char);
+    Set<DirectionList> newList = {};
+    final numericStepsForChar = numericKeypad.stepCombinationsTo(
+        numericKeypadPointer, char,
+        useNewSequenceGenerator: useNewSequenceGenerator);
     if (numericSteps.isEmpty) {
       newList.addAll(numericStepsForChar);
     } else {
       for (final previousDirections in numericSteps) {
         for (final newDirections in numericStepsForChar) {
-          newList.add([...previousDirections, ...newDirections]);
+          newList.add(DirectionList([...previousDirections, ...newDirections]));
         }
       }
     }
@@ -167,25 +254,31 @@ int shortestSequence(String code) {
     numericSteps = newList;
   }
 
+  printDirectionLists('Code $code', numericSteps);
+
   // Find moves in directional keypads 1 and 2 (robots 2 and 3).
-  List<List<DirectionalButton>> allDirectionalSteps = [];
-  List<List<DirectionalButton>> listToProcess = numericSteps;
-  for (int i = 2; i <= 3; i++) {
-    List<List<DirectionalButton>> directionalStepsI = [];
+  Set<DirectionList> allDirectionalSteps = {};
+  Set<DirectionList> listToProcess = numericSteps;
+  for (int i = 0; i < numDirectionalKeypads; i++) {
+    print('Step $i: ${allDirectionalSteps.length}');
+    //print('Directional Keypad $i');
+    Set<DirectionList> directionalStepsI = {};
     for (final steps in listToProcess) {
       Point<int> directionalKeypadPointer = directionalKeypad.location;
-      List<List<DirectionalButton>> allOptionsForThisNumericOptions = [];
+      Set<DirectionList> allOptionsForThisNumericOptions = {};
       for (final step in steps) {
         final directionSteps = directionalKeypad.stepCombinationsTo(
-            directionalKeypadPointer, step);
-        List<List<DirectionalButton>> newList = [];
+            directionalKeypadPointer, step,
+            useNewSequenceGenerator: useNewSequenceGenerator);
+        Set<DirectionList> newList = {};
 
         if (allOptionsForThisNumericOptions.isEmpty) {
           newList.addAll(directionSteps);
         } else {
           for (final previousDirections in allOptionsForThisNumericOptions) {
             for (final newDirections in directionSteps) {
-              newList.add([...previousDirections, ...newDirections]);
+              newList.add(
+                  DirectionList([...previousDirections, ...newDirections]));
             }
           }
         }
@@ -201,7 +294,24 @@ int shortestSequence(String code) {
     listToProcess = directionalStepsI;
   }
 
+  print('');
+  //printDirectionLists('Final for $code', allDirectionalSteps);
+  print('Final count for $code: ${allDirectionalSteps.length}');
+
+  final ids = <String>{};
+  allDirectionalSteps.retainWhere((x) => ids.add(directionsToString(x)));
+  print('After removing dupes: ${allDirectionalSteps.length}');
+  print('');
+
   return allDirectionalSteps.map((s) => s.length).min;
+}
+
+void printDirectionLists(
+    String desc, Iterable<List<DirectionalButton>> directionLists) {
+  print('$desc:');
+  for (final list in directionLists) {
+    print('  - ${directionsToString(list)}');
+  }
 }
 
 String directionsToString(List<DirectionalButton> directions) {

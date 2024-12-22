@@ -1,11 +1,15 @@
 import 'package:aoc_2024/lib.dart';
 import 'package:aoc_2024/day21/part_1.dart' as part1;
+import 'package:aoc_2024/day21/part_2.dart' as part2;
 
 Future<void> main(List<String> arguments) async {
   await runDay(
     day: Day.day21,
     part1: part1.calculate,
+    //part1: (_) => Future.value(0),
+    //part2: part2.calculate,
     part2: (_) => Future.value(0),
     runReal: true,
+    runSample: false,
   );
 }

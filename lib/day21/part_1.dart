@@ -27,9 +27,11 @@ Future<int> calculate(File file) async {
 
   int complexity = 0;
   for (final code in data) {
-    final sequence = shortestSequence(code);
+    final sequence = shortestSequence(code, 2, useNewSequenceGenerator: true);
     final sequenceComplexity = sequence * int.parse(code.substring(0, 3));
     complexity += sequenceComplexity;
+
+    print('  - length $sequence');
   }
 
   return complexity;
