@@ -41,7 +41,7 @@ Future<int> calculate(File file) async {
 /// Stores the total sales price for a given sequence.
 /// Each secret number simulation should only contribute once per
 /// key to this map.
-HashMap<String, int> totalPriceForSequence = HashMap();
+HashMap<(int, int, int, int), int> totalPriceForSequence = HashMap();
 
 /// Generate the secret numbers up to [iterations], starting at
 /// the given [starting] secret number. The first time each
@@ -49,8 +49,8 @@ HashMap<String, int> totalPriceForSequence = HashMap();
 /// is added to [totalPriceForSequence].
 void _simulate(int starting, int iterations) {
   // Keep track of the sequences seen for this starting number simulation.
-  Set<String> seenSequences = {};
-  List<int> trailingFourChanges = [];
+  Set<(int, int, int, int)> seenSequences = {};
+  (int, int, int, int) trailingFourChanges = (0, 0, 0, 0);
 
   int secret = starting;
   int lastPrice = starting % 10;
@@ -58,17 +58,19 @@ void _simulate(int starting, int iterations) {
     secret = nextSecret(secret);
     final newPrice = secret % 10;
 
-    trailingFourChanges.add(newPrice - lastPrice);
+    trailingFourChanges = (
+      trailingFourChanges.$2,
+      trailingFourChanges.$3,
+      trailingFourChanges.$4,
+      newPrice - lastPrice
+    );
     if (i >= 4) {
-      trailingFourChanges.removeAt(0);
-      final key = trailingFourChanges.join(',');
-
       // If this is the first time we have seen this sequence, add the
       // price to the sales map.
-      if (!seenSequences.contains(key)) {
-        seenSequences.add(key);
+      if (!seenSequences.contains(trailingFourChanges)) {
+        seenSequences.add(trailingFourChanges);
 
-        totalPriceForSequence.update(key, (x) => x + newPrice,
+        totalPriceForSequence.update(trailingFourChanges, (x) => x + newPrice,
             ifAbsent: () => newPrice);
       }
     }
