@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'shared.dart';
+import 'sequences.dart';
 
 /// --- Day 21: Keypad Conundrum ---
 ///
@@ -24,15 +25,5 @@ import 'shared.dart';
 /// values.
 Future<int> calculate(File file) async {
   final data = await loadData(file);
-
-  int complexity = 0;
-  for (final code in data) {
-    final sequence = shortestSequence(code, 2, useNewSequenceGenerator: true);
-    final sequenceComplexity = sequence * int.parse(code.substring(0, 3));
-    complexity += sequenceComplexity;
-
-    print('  - length $sequence');
-  }
-
-  return complexity;
+  return totalComplexityForCodes(data, numDirectionalKeypads: 2);
 }

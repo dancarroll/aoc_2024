@@ -6,10 +6,6 @@ Future<void> main(List<String> arguments) async {
   await runDay(
     day: Day.day21,
     part1: part1.calculate,
-    //part1: (_) => Future.value(0),
-    //part2: part2.calculate,
-    part2: (_) => Future.value(0),
-    runReal: true,
-    runSample: false,
+    part2: part2.calculate,
   );
 }
