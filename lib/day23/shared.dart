@@ -17,3 +17,24 @@ Future<Map<String, Set<String>>> loadData(File file) async {
 
   return network;
 }
+
+Map<String, Set<String>> loadNetwork(List<String> lines) {
+  final network = <String, Set<String>>{};
+  for (final line in lines) {
+    final computers = line.split('-');
+    assert(computers.length == 2, 'Only two names expected');
+
+    network.update(computers[0], (l) => l..add(computers[1]),
+        ifAbsent: () => {computers[1]});
+    network.update(computers[1], (l) => l..add(computers[0]),
+        ifAbsent: () => {computers[0]});
+  }
+
+  return network;
+}
+
+Future<List<String>> loadFile(File file, int skipLine) async {
+  final lines = await file.readAsLines();
+  lines.removeAt(skipLine);
+  return lines;
+}
