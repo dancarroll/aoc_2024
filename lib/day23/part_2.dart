@@ -4,10 +4,12 @@ import 'package:collection/collection.dart';
 
 import 'shared.dart';
 
+final setEquality = const SetEquality<String>();
+final setEquals = setEquality.equals;
+
 /// Represents an interconnected group of computers.
 final class Group {
   final Set<String> computers;
-  String? _cachedString;
 
   Group(String name, String connection) : computers = {} {
     computers.add(name);
@@ -23,25 +25,21 @@ final class Group {
   /// Add a new computer to this group.
   void add(String name) {
     computers.add(name);
-    _cachedString = null;
   }
 
   @override
   bool operator ==(Object other) {
     if (other is Group) {
-      return toString() == other.toString();
+      return setEquals(computers, other.computers);
     }
     return false;
   }
 
   @override
-  int get hashCode => toString().hashCode;
+  int get hashCode => setEquality.hash(computers);
 
   @override
-  String toString() {
-    _cachedString ??= computers.sorted().join(',');
-    return _cachedString!;
-  }
+  String toString() => computers.sorted().join(',');
 }
 
 /// Continuing from part 1, rather than finding all groups of three computers,
@@ -69,19 +67,25 @@ Future<String> calculate(File file) async {
       // For each group containing this pair, check which potential connections
       // are also interconnected with this group.
       for (final existingGroup in existingGroups) {
+        // Find all potential connections to this group. Start with the union of
+        // all of the group members' connections, filtering out the group
+        // members themselves.
         var allPotentialConnections = existingGroup.computers
-            .toList()
             .fold(<String>{}, (e, v) => e.union(network[v]!)).where(
-                (c) => c != computer.key && c != connection);
+                (c) => !existingGroup.computers.contains(c));
 
         // For all potential connections, if they connect to every computer in
-        // the group, create a new group with the existing members plus the
-        // new connection.
+        // the group, update the group with the new connection.
         for (final potentialConnection in allPotentialConnections) {
           if (existingGroup.computers
               .every((c) => network[c]!.contains(potentialConnection))) {
-            groups.add(Group.fromSet(
-                {...existingGroup.computers, potentialConnection}));
+            // Remove and readd the group. This prevents adding a duplicate
+            // entry to the set, since modifying the group while it is in the
+            // set would not trigger any logic in the set to remove the
+            // duplicate.
+            groups.remove(existingGroup);
+            existingGroup.add(potentialConnection);
+            groups.add(existingGroup);
           }
         }
       }
