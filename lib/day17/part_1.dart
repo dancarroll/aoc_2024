@@ -16,5 +16,5 @@ Future<String> calculate(File file) async {
 
 /// Executes the given computer. Exposed as a top-level function for tests.
 String executeComputer(Computer computer) {
-  return computer.execute();
+  return computer.execute().join(',');
 }

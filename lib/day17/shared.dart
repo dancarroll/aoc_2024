@@ -66,13 +66,19 @@ final class Computer {
   /// List of instructions for the current program.
   final List<Instruction> instructions;
 
-  Computer(this.a, this.b, this.c, this.instructions);
+  /// The original string representation of the program instructions.
+  final String serializedInstructions;
 
-  factory Computer.fromComputer(Computer other) =>
-      Computer(other.a, other.b, other.c, other.instructions);
+  Computer(
+      this.a, this.b, this.c, this.instructions, this.serializedInstructions);
+
+  factory Computer.withOverrideA(Computer other, int a) => Computer(
+      a, other.b, other.c, other.instructions, other.serializedInstructions);
 
   /// Executes the program to completiong, and returns the result.
-  String execute() {
+  /// If [allowJumps] is false, this execution will not allow the jump
+  /// instruction.
+  List<int> execute({bool allowJumps = true}) {
     List<int> result = [];
 
     while (_index < instructions.length) {
@@ -87,7 +93,7 @@ final class Computer {
         case OpCode.bst:
           b = operand % 8;
         case OpCode.jnz:
-          if (a != 0) {
+          if (a != 0 && allowJumps) {
             // Operand value represents the index. Since instructions represent
             // two indices (an opcode and operand), need to divide this by two.
             // Also subtracting one, as the index will be incremented at the end
@@ -107,7 +113,7 @@ final class Computer {
       _index++;
     }
 
-    return result.join(',');
+    return result;
   }
 
   /// Returns the operand value given an [OpCode]. Operands are either
@@ -153,11 +159,12 @@ Computer loadDataFromLines(List<String> lines) {
   final b = int.parse(lines[1].split(' ')[2]);
   final c = int.parse(lines[2].split(' ')[2]);
 
+  final instructionsStr = lines[4].split(' ')[1];
   final instructions = <Instruction>[];
-  final program = lines[4].split(' ')[1].split(',').map(int.parse).toList();
+  final program = instructionsStr.split(',').map(int.parse).toList();
   for (int i = 0; i < program.length; i += 2) {
     instructions.add(Instruction.fromInput(program[i], program[i + 1]));
   }
 
-  return Computer(a, b, c, instructions);
+  return Computer(a, b, c, instructions, instructionsStr);
 }
