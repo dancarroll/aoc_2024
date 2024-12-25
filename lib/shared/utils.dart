@@ -19,3 +19,13 @@ List<(T, T)> orderedPairs<T>(List<T> items) {
   }
   return records;
 }
+
+List<(T, T)> pairsFromIterables<T>(Iterable<T> one, Iterable<T> two) {
+  List<(T, T)> records = [];
+  for (final itemA in one) {
+    for (final itemB in two) {
+      records.add((itemA, itemB));
+    }
+  }
+  return records;
+}
