@@ -36,29 +36,20 @@ enum Gate {
 final class GateWire extends Wire {
   final Gate gate;
   final (String, String) pair;
-  bool? _cachedValue;
 
   GateWire(this.gate, this.pair);
 
   @override
   bool calculate(Map<String, Wire> input) {
-    if (_cachedValue == null) {
-      final input1 = input[pair.$1]!.calculate(input);
-      final input2 = input[pair.$2]!.calculate(input);
+    final input1 = input[pair.$1]!.calculate(input);
+    final input2 = input[pair.$2]!.calculate(input);
 
-      _cachedValue = switch (gate) {
-        Gate.and => input1 && input2,
-        Gate.or => input1 || input2,
-        Gate.xor => input1 ^ input2,
-      };
-    }
-
-    return _cachedValue!;
+    return switch (gate) {
+      Gate.and => input1 && input2,
+      Gate.or => input1 || input2,
+      Gate.xor => input1 ^ input2,
+    };
   }
-
-  @override
-  String toString() =>
-      (_cachedValue == null) ? 'unknown' : ((_cachedValue!) ? '1' : '0');
 }
 
 /// Loads wire data from a file.
