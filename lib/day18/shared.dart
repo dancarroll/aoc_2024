@@ -60,11 +60,11 @@ enum Direction {
 
   /// Returns coordinates after moving this direction from the given [point].
   Point<int> move(Point<int> point) => switch (this) {
-        up => Point(point.x, point.y - 1),
-        down => Point(point.x, point.y + 1),
-        left => Point(point.x - 1, point.y),
-        right => Point(point.x + 1, point.y)
-      };
+    up => Point(point.x, point.y - 1),
+    down => Point(point.x, point.y + 1),
+    left => Point(point.x - 1, point.y),
+    right => Point(point.x + 1, point.y),
+  };
 
   /// Returns all of the moves from a given [point].
   static List<Point<int>> allMoves(Point<int> point) {

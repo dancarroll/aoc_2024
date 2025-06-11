@@ -28,8 +28,10 @@ Future<int> calculate(File file) async {
         .toList();
 
     // Calculate the total distance from the origin to all robots.
-    final totalDistance =
-        newPoints.fold(0, (v, e) => v + e.squaredDistanceTo(origin));
+    final totalDistance = newPoints.fold(
+      0,
+      (v, e) => v + e.squaredDistanceTo(origin),
+    );
 
     // Determine the percentage change in the current distance from the
     // rolling average.

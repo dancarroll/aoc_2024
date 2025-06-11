@@ -71,14 +71,15 @@ Future<String> calculate(File file) async {
         // all of the group members' connections, filtering out the group
         // members themselves.
         var allPotentialConnections = existingGroup.computers
-            .fold(<String>{}, (e, v) => e.union(network[v]!)).where(
-                (c) => !existingGroup.computers.contains(c));
+            .fold(<String>{}, (e, v) => e.union(network[v]!))
+            .where((c) => !existingGroup.computers.contains(c));
 
         // For all potential connections, if they connect to every computer in
         // the group, update the group with the new connection.
         for (final potentialConnection in allPotentialConnections) {
-          if (existingGroup.computers
-              .every((c) => network[c]!.contains(potentialConnection))) {
+          if (existingGroup.computers.every(
+            (c) => network[c]!.contains(potentialConnection),
+          )) {
             // Remove and readd the group. This prevents adding a duplicate
             // entry to the set, since modifying the group while it is in the
             // set would not trigger any logic in the set to remove the

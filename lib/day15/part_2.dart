@@ -22,7 +22,10 @@ Future<int> calculate(File file) async {
       case LocationType.boxRight:
         // Determine moveable boxes is a lot more complicated this time.
         final moveablePoints = findBoxesThatAreMoveable(
-            warehouse, nextSpace, instruction.direction);
+          warehouse,
+          nextSpace,
+          instruction.direction,
+        );
 
         if (moveablePoints.isNotEmpty) {
           // Move all of the points in the given direction.
@@ -43,7 +46,8 @@ Future<int> calculate(File file) async {
 
       case LocationType.box:
         throw Exception(
-            'Single space boxe should not be encountered in part 2');
+          'Single space boxe should not be encountered in part 2',
+        );
 
       case LocationType.wall:
     }
@@ -56,14 +60,23 @@ Future<int> calculate(File file) async {
 /// moved. If there are any walls that will block the cascading group of boxes
 /// from moving, this will return empty.
 List<Point<int>> findBoxesThatAreMoveable(
-    Warehouse warehouse, Point<int> point, Point<int> direction) {
+  Warehouse warehouse,
+  Point<int> point,
+  Point<int> direction,
+) {
   final type = warehouse[point].type;
-  assert(type == LocationType.boxLeft || type == LocationType.boxRight,
-      'Only expect box types');
+  assert(
+    type == LocationType.boxLeft || type == LocationType.boxRight,
+    'Only expect box types',
+  );
 
   List<Point<int>> moveablePoints = [];
-  final moveable =
-      recursivelyFindMoveableBoxes(warehouse, point, direction, moveablePoints);
+  final moveable = recursivelyFindMoveableBoxes(
+    warehouse,
+    point,
+    direction,
+    moveablePoints,
+  );
 
   return moveable ? moveablePoints : [];
 }
@@ -122,7 +135,11 @@ bool recursivelyFindMoveableBoxes(
   bool moveable = true;
   for (final boxPart in curr) {
     moveable &= recursivelyFindMoveableBoxes(
-        warehouse, boxPart + direction, direction, moveablePoints);
+      warehouse,
+      boxPart + direction,
+      direction,
+      moveablePoints,
+    );
 
     // If we've already encountered something blocking the move,
     // short-circuit instead of processing the other branch.
@@ -138,18 +155,26 @@ bool recursivelyFindMoveableBoxes(
 /// This function will sort the points first, to ensure it doesn't accidentally
 /// overwrite any important data before moving.
 void movePoints(
-    Warehouse warehouse, List<Point<int>> points, Point<int> direction) {
+  Warehouse warehouse,
+  List<Point<int>> points,
+  Point<int> direction,
+) {
   // Sort all the objects in reverse order from the direction we are traveling.
   // Since one of the cardinal directions will always be zero, can use a simple
   // comparison function that just multiplies each component and adds them
   // together.
-  points.sort((b, a) => (a.x * direction.x + a.y * direction.y)
-      .compareTo(b.x * direction.x + b.y * direction.y));
+  points.sort(
+    (b, a) => (a.x * direction.x + a.y * direction.y).compareTo(
+      b.x * direction.x + b.y * direction.y,
+    ),
+  );
 
   // After sorting, iterate through each point and move it.
   for (final point in points) {
-    assert(warehouse[point + direction].type == LocationType.empty,
-        'Expect this space to be empty');
+    assert(
+      warehouse[point + direction].type == LocationType.empty,
+      'Expect this space to be empty',
+    );
     warehouse[point + direction].type = warehouse[point].type;
     warehouse[point].type = LocationType.empty;
   }

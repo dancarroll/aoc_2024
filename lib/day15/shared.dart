@@ -2,14 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 /// Represents a warehouse location type.
-enum LocationType {
-  empty,
-  wall,
-  box,
-  robot,
-  boxLeft,
-  boxRight;
-}
+enum LocationType { empty, wall, box, robot, boxLeft, boxRight }
 
 /// Represents a specific location in the warehouse.
 final class Location {
@@ -31,13 +24,13 @@ final class Location {
 
   @override
   String toString() => switch (type) {
-        LocationType.empty => '.',
-        LocationType.wall => '#',
-        LocationType.robot => '@',
-        LocationType.box => 'O',
-        LocationType.boxLeft => '[',
-        LocationType.boxRight => ']',
-      };
+    LocationType.empty => '.',
+    LocationType.wall => '#',
+    LocationType.robot => '@',
+    LocationType.box => 'O',
+    LocationType.boxLeft => '[',
+    LocationType.boxRight => ']',
+  };
 }
 
 /// Represents a single instruction for the robot.
@@ -49,20 +42,20 @@ enum Instruction {
 
   /// Maps the input character to the appropriate instruction.
   factory Instruction.fromChar(String str) => switch (str) {
-        '^' => up,
-        '>' => right,
-        'v' => down,
-        '<' => left,
-        _ => throw Exception('Unsupported character: $str'),
-      };
+    '^' => up,
+    '>' => right,
+    'v' => down,
+    '<' => left,
+    _ => throw Exception('Unsupported character: $str'),
+  };
 
   /// Provides a vector representing the instruction direction.
   Point<int> get direction => switch (this) {
-        up => Point(0, -1),
-        right => Point(1, 0),
-        down => Point(0, 1),
-        left => Point(-1, 0),
-      };
+    up => Point(0, -1),
+    right => Point(1, 0),
+    down => Point(0, 1),
+    left => Point(-1, 0),
+  };
 }
 
 /// Represents the warehouse from the problem.
@@ -73,8 +66,13 @@ final class Warehouse {
   final Point<int> robot;
   final List<Instruction> instructions;
 
-  Warehouse(this.map, this.robot, this.instructions,
-      {required this.height, required this.width});
+  Warehouse(
+    this.map,
+    this.robot,
+    this.instructions, {
+    required this.height,
+    required this.width,
+  });
 
   /// Returns the location at the given point. This is a convenience operator
   /// over directly interacting with the map, as it performs the non-null

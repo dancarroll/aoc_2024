@@ -17,10 +17,11 @@ final class FrequencyMap {
   /// Width bound of the map.
   final int width;
 
-  FrequencyMap(
-      {required this.antennaLocations,
-      required this.height,
-      required this.width});
+  FrequencyMap({
+    required this.antennaLocations,
+    required this.height,
+    required this.width,
+  });
 
   /// Returns true if the given location fits within the bounds of
   /// the map.
@@ -47,8 +48,13 @@ final class FrequencyMap {
 
     for (final antennaLocations in antennaLocations.values) {
       for (final pair in pairs(antennaLocations)) {
-        antinodes.addAll(_generateAntinodesUntilOutOfBounds(
-            a: pair.$1, b: pair.$2, includeHarmonics: includeHarmonics));
+        antinodes.addAll(
+          _generateAntinodesUntilOutOfBounds(
+            a: pair.$1,
+            b: pair.$2,
+            includeHarmonics: includeHarmonics,
+          ),
+        );
       }
     }
 
@@ -57,15 +63,16 @@ final class FrequencyMap {
 
   /// Generates the list of antinodes for a single pair of antenna locations.
   /// See [antinodes] for a description of the generation.
-  Set<Location> _generateAntinodesUntilOutOfBounds(
-      {required Location a,
-      required Location b,
-      required bool includeHarmonics}) {
+  Set<Location> _generateAntinodesUntilOutOfBounds({
+    required Location a,
+    required Location b,
+    required bool includeHarmonics,
+  }) {
     final hop = a - b;
     Set<Location> locations = {};
 
     final List<({Location starting, Location Function(Location) hopFunc})>
-        directionFunctions = [
+    directionFunctions = [
       (starting: a, hopFunc: (l) => l + hop),
       (starting: a, hopFunc: (l) => l - hop),
       (starting: b, hopFunc: (l) => l + hop),
@@ -76,21 +83,21 @@ final class FrequencyMap {
       var addedOneAntinode = false;
       var next = direction.hopFunc(direction.starting);
       while (
-          // If not including all harmonics, only process this loop until
-          // an antinode has been added.
-          (includeHarmonics || !addedOneAntinode) &&
-              // The two antenna locations themselves are only eligible to
-              // be considered antinodes when including all harmonics.
-              (includeHarmonics || (next != a && next != b)) &&
-              // Stop processing when encountering an out-of-bounds
-              // location.
-              inBounds(next) &&
-              // If a location has already been seen, we can stop processing.
-              // This is because [directionFunctions] will attempt to process
-              // each direction from both antenna locations. This allows us to
-              // avoid figuring out which direction to travel from a given
-              // antenna, but avoid processing the same locations twice.
-              !locations.contains(next)) {
+      // If not including all harmonics, only process this loop until
+      // an antinode has been added.
+      (includeHarmonics || !addedOneAntinode) &&
+          // The two antenna locations themselves are only eligible to
+          // be considered antinodes when including all harmonics.
+          (includeHarmonics || (next != a && next != b)) &&
+          // Stop processing when encountering an out-of-bounds
+          // location.
+          inBounds(next) &&
+          // If a location has already been seen, we can stop processing.
+          // This is because [directionFunctions] will attempt to process
+          // each direction from both antenna locations. This allows us to
+          // avoid figuring out which direction to travel from a given
+          // antenna, but avoid processing the same locations twice.
+          !locations.contains(next)) {
         locations.add(next);
         addedOneAntinode = true;
         next = direction.hopFunc(next);
@@ -121,7 +128,8 @@ Future<FrequencyMap> loadData(File file) async {
   }
 
   return FrequencyMap(
-      antennaLocations: frequencies,
-      height: lines.length,
-      width: lines[0].length);
+    antennaLocations: frequencies,
+    height: lines.length,
+    width: lines[0].length,
+  );
 }

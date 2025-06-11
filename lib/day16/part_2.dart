@@ -12,7 +12,8 @@ import 'paths.dart';
 Future<int> calculate(File file) async {
   final maze = await loadData(file);
 
-  final uniquePoints =
-      findBestPaths(maze).fold(<Point<int>>{}, (v, e) => {...v, ...e.visited});
+  final uniquePoints = findBestPaths(
+    maze,
+  ).fold(<Point<int>>{}, (v, e) => {...v, ...e.visited});
   return uniquePoints.length;
 }

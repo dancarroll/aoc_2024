@@ -25,8 +25,9 @@ Future<int> calculate(File file) async {
       // - Then, look at the intersection of of the valid third partners with
       //   the first computer's connections.
       final lookingForPartners = connections.difference({computer.key});
-      for (final third
-          in network[connection]!.intersection(lookingForPartners)) {
+      for (final third in network[connection]!.intersection(
+        lookingForPartners,
+      )) {
         // In order to avoid duplicates, sort the list of three computers
         // before adding it to the set.
         final triplet = [computer.key, connection, third]..sort();

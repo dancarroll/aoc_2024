@@ -8,12 +8,7 @@ extension ManhattanDistance on Point<int> {
 }
 
 /// Represents a location within the maze.
-enum Location {
-  wall,
-  empty,
-  start,
-  end;
-}
+enum Location { wall, empty, start, end }
 
 /// Represents a maze in the "race condition festival".
 final class Maze {
@@ -38,11 +33,11 @@ enum Heading {
 
   /// Calculates the new point based on a given point and this heading.
   Point<int> move(Point<int> point) => switch (this) {
-        up => Point(point.x, point.y - 1),
-        down => Point(point.x, point.y + 1),
-        left => Point(point.x - 1, point.y),
-        right => Point(point.x + 1, point.y)
-      };
+    up => Point(point.x, point.y - 1),
+    down => Point(point.x, point.y + 1),
+    left => Point(point.x - 1, point.y),
+    right => Point(point.x + 1, point.y),
+  };
 }
 
 /// Finds all of the lowest cost paths through the given maze.
@@ -54,8 +49,11 @@ List<Point<int>> findSinglePath(Maze maze) {
   // the shortest path has been identified).
   while (!path.contains(maze.end)) {
     // Find all of the possible next steps along the current path.
-    final nextSteps =
-        _getValidStepsFromPoint(maze: maze, current: path.last, visited: path);
+    final nextSteps = _getValidStepsFromPoint(
+      maze: maze,
+      current: path.last,
+      visited: path,
+    );
     assert(nextSteps.length == 1, 'Expect only one next step');
     path.add(nextSteps.first);
   }
@@ -71,10 +69,11 @@ List<Point<int>> findSinglePath(Maze maze) {
 /// In reality, this function should never return more than 3 points (since
 /// only moves in cardinal directions are allowed, and one of those 4 directions
 /// would have already been visited).
-Iterable<Point<int>> _getValidStepsFromPoint(
-    {required Maze maze,
-    required Point<int> current,
-    required List<Point<int>> visited}) {
+Iterable<Point<int>> _getValidStepsFromPoint({
+  required Maze maze,
+  required Point<int> current,
+  required List<Point<int>> visited,
+}) {
   // Given the only potential moves (straight, clockwise, counterclockwise)
   return Heading.values
       .map((h) => h.move(current))
@@ -84,11 +83,13 @@ Iterable<Point<int>> _getValidStepsFromPoint(
       .where((p) => !visited.contains(p))
       // Limit to steps that would land on empty spaces or the end.
       // If a cheat is allowed, also include spaces that would move onto a wall.
-      .where((p) => switch (maze.map[p]) {
-            Location.empty => true,
-            Location.end => true,
-            _ => false,
-          });
+      .where(
+        (p) => switch (maze.map[p]) {
+          Location.empty => true,
+          Location.end => true,
+          _ => false,
+        },
+      );
 }
 
 /// Compute the savings from each unique cheat.
@@ -103,12 +104,16 @@ List<int> uniqueCheatSavings(List<Point<int>> path, int maxCheatLength) {
   // calculate the savings.
   List<int> savings = [];
   for (final point in path) {
-    for (final jumpToPoint in path
-        .where((p) =>
-            p.manhattanDistance(point) >= 2 &&
-            p.manhattanDistance(point) <= maxCheatLength)
-        .where((p) => pathLength[p]! < (path.length - 1))) {
-      final savingsWithCheat = pathLength[point]! -
+    for (final jumpToPoint
+        in path
+            .where(
+              (p) =>
+                  p.manhattanDistance(point) >= 2 &&
+                  p.manhattanDistance(point) <= maxCheatLength,
+            )
+            .where((p) => pathLength[p]! < (path.length - 1))) {
+      final savingsWithCheat =
+          pathLength[point]! -
           pathLength[jumpToPoint]! -
           point.manhattanDistance(jumpToPoint);
       if (savingsWithCheat > 0) {

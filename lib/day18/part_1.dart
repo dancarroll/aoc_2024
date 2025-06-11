@@ -10,7 +10,8 @@ import 'shared.dart';
 Future<int> calculate(File file) async {
   final memorySpace = await loadData(file);
 
-  final blocked =
-      memorySpace.simulate(memorySpace.startingSimulationNanoseconds);
+  final blocked = memorySpace.simulate(
+    memorySpace.startingSimulationNanoseconds,
+  );
   return findFewestSteps(memorySpace, blocked);
 }

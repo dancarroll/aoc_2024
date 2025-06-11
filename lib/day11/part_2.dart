@@ -49,7 +49,8 @@ int _calculate(int stone, int blink, Map<(int, int), int> savedCalculations) {
   } else if (digits.isEven) {
     // Stones with an even number of digits are cleaved in two.
     final (stoneLeft, stoneRight) = split(stone, digits: digits);
-    val = _calculate(stoneLeft, blink + 1, savedCalculations) +
+    val =
+        _calculate(stoneLeft, blink + 1, savedCalculations) +
         _calculate(stoneRight, blink + 1, savedCalculations);
   } else {
     // Otherwise, just multiply the stone value by 2024.

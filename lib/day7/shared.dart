@@ -98,8 +98,11 @@ final class AmbiguousEquation {
 
   /// Recursively generates a list of operator combinations and determines if
   /// any result in a valid equation.
-  bool _generateValidOperators(int targetLength, List<Operator> operatorOptions,
-      List<Operator> current) {
+  bool _generateValidOperators(
+    int targetLength,
+    List<Operator> operatorOptions,
+    List<Operator> current,
+  ) {
     if (current.length == targetLength) {
       return _checkEquationVal(current) == statedResult;
     } else if (current.isNotEmpty &&
@@ -110,8 +113,12 @@ final class AmbiguousEquation {
       return false;
     }
 
-    return operatorOptions.any((operator) => _generateValidOperators(
-        targetLength, operatorOptions, [...current, operator]));
+    return operatorOptions.any(
+      (operator) => _generateValidOperators(targetLength, operatorOptions, [
+        ...current,
+        operator,
+      ]),
+    );
   }
 
   /// Checks the value of the equation given a (potential partial) set of
@@ -126,8 +133,10 @@ final class AmbiguousEquation {
       components.add(Value(operands[i + 1]));
     }
 
-    final equation =
-        Equation(statedResult: statedResult, components: components);
+    final equation = Equation(
+      statedResult: statedResult,
+      components: components,
+    );
     return equation.compute();
   }
 }

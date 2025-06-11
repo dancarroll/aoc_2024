@@ -2,12 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 /// Represents a location within the maze.
-enum Location {
-  wall,
-  empty,
-  start,
-  end;
-}
+enum Location { wall, empty, start, end }
 
 /// Represents a maze in the Reindeer Olympics.
 final class Maze {

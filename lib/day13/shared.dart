@@ -20,11 +20,13 @@ Future<List<Machine>> loadData(File file, {int prizeHop = 0}) async {
   int i = 0;
   while (i < lines.length) {
     buttonRegex.firstMatch(lines[i]);
-    machines.add(Machine(
-      parseButton(lines[i]),
-      parseButton(lines[i + 1]),
-      parsePrize(lines[i + 2], prizeHop: prizeHop),
-    ));
+    machines.add(
+      Machine(
+        parseButton(lines[i]),
+        parseButton(lines[i + 1]),
+        parsePrize(lines[i + 2], prizeHop: prizeHop),
+      ),
+    );
 
     // Skip four lines. The three lines that were just consumed, plus the
     // expected newline.

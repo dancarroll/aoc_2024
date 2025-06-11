@@ -7,14 +7,11 @@ import 'shared.dart';
 Future<int> calculate(File file) async {
   final equations = await loadData(file);
 
-  final result =
-      equations.where(_canEquationBeTrue).fold(0, (v, e) => v + e.statedResult);
+  final result = equations
+      .where(_canEquationBeTrue)
+      .fold(0, (v, e) => v + e.statedResult);
   return result;
 }
 
 bool _canEquationBeTrue(final AmbiguousEquation equation) =>
-    equation.canBeValid([
-      Add(),
-      Multiply(),
-      Concatenation(),
-    ]);
+    equation.canBeValid([Add(), Multiply(), Concatenation()]);

@@ -62,7 +62,7 @@ void _simulate(int starting, int iterations) {
       trailingFourChanges.$2,
       trailingFourChanges.$3,
       trailingFourChanges.$4,
-      newPrice - lastPrice
+      newPrice - lastPrice,
     );
     if (i >= 4) {
       // If this is the first time we have seen this sequence, add the
@@ -70,8 +70,11 @@ void _simulate(int starting, int iterations) {
       if (!seenSequences.contains(trailingFourChanges)) {
         seenSequences.add(trailingFourChanges);
 
-        totalPriceForSequence.update(trailingFourChanges, (x) => x + newPrice,
-            ifAbsent: () => newPrice);
+        totalPriceForSequence.update(
+          trailingFourChanges,
+          (x) => x + newPrice,
+          ifAbsent: () => newPrice,
+        );
       }
     }
 

@@ -49,7 +49,9 @@ Future<int> calculate(File file) async {
 
     if (remainingFreeSpace > 0) {
       references.insert(
-          nextFree + 1, BlockReference(size: remainingFreeSpace, id: null));
+        nextFree + 1,
+        BlockReference(size: remainingFreeSpace, id: null),
+      );
     } else {
       // If we added a new disk reference, then don't decrement here,
       // otherwise we would be skipping a block (due to the indices changing).

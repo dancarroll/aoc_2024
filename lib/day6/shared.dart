@@ -15,7 +15,7 @@ class Location {
   bool isObstruction;
 
   Location(int x, int y, {this.isObstruction = false, Direction? visited})
-      : point = Point(x, y) {
+    : point = Point(x, y) {
     if (visited != null) {
       _visitedInDirections.add(visited);
     }
@@ -29,7 +29,8 @@ class Location {
   void visit(Direction direction) {
     if (_visitedInDirections.contains(direction)) {
       throw Exception(
-          'Cycle detected! Location $point already visited in $direction');
+        'Cycle detected! Location $point already visited in $direction',
+      );
     }
     _visitedInDirections.add(direction);
   }
@@ -45,11 +46,11 @@ enum Direction {
   /// Calculates the new point based on a given point and this
   /// direction of travel.
   Point<int> move(Point<int> point) => switch (this) {
-        up => Point(point.x - 1, point.y),
-        down => Point(point.x + 1, point.y),
-        left => Point(point.x, point.y - 1),
-        right => Point(point.x, point.y + 1)
-      };
+    up => Point(point.x - 1, point.y),
+    down => Point(point.x + 1, point.y),
+    left => Point(point.x, point.y - 1),
+    right => Point(point.x, point.y + 1),
+  };
 
   /// Returns a new direction based on a 90 degree rotation.
   Direction rotate() {
@@ -81,12 +82,12 @@ class Person {
   void move(Point<int> position) => point = position;
 }
 
-bool _inBounds(
-        {required int numRows,
-        required int numCols,
-        required int x,
-        required int y}) =>
-    x >= 0 && x < numRows && y >= 0 && y < numCols;
+bool _inBounds({
+  required int numRows,
+  required int numCols,
+  required int x,
+  required int y,
+}) => x >= 0 && x < numRows && y >= 0 && y < numCols;
 
 final class LocationMap {
   final List<List<Location>> map;

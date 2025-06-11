@@ -32,8 +32,9 @@ Future<List<BlockReference>> loadBlocks(File file) async {
   int id = 0;
   bool isFile = true;
   for (int i = 0; i < line.length; i++) {
-    references
-        .add(BlockReference(size: int.parse(line[i]), id: isFile ? id : null));
+    references.add(
+      BlockReference(size: int.parse(line[i]), id: isFile ? id : null),
+    );
     if (isFile) id++;
     isFile = !isFile;
   }
