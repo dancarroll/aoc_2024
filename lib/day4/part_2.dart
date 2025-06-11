@@ -52,6 +52,6 @@ bool _isPositionCrossMas(List<String> lines, int row, int col) {
   return _isMas(forward) && _isMas(back);
 }
 
-bool _isMas(final str) {
+bool _isMas(final String str) {
   return str == 'MAS' || str == 'SAM';
 }

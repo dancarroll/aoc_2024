@@ -14,7 +14,7 @@ class Location {
   /// unable to move to this location.
   bool isObstruction;
 
-  Location(x, y, {this.isObstruction = false, Direction? visited})
+  Location(int x, int y, {this.isObstruction = false, Direction? visited})
       : point = Point(x, y) {
     if (visited != null) {
       _visitedInDirections.add(visited);
