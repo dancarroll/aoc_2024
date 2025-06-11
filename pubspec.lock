@@ -46,6 +46,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  clique:
+    dependency: "direct main"
+    description:
+      name: clique
+      sha256: "4b9c6f138e9b9165a513fc268bce0af87b6487888d5d9b628556910f4f7d2de2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   collection:
     dependency: "direct main"
     description:

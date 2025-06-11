@@ -11,6 +11,7 @@ dependencies:
   path: ^1.9.1
   collection: ^1.19.1
   quiver: ^3.2.2
+  clique: ^1.0.2
 
 dev_dependencies:
   lints: ^6.0.0
