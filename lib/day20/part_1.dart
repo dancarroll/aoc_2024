@@ -17,7 +17,7 @@ Future<int> calculate(File file) async {
   // First, find the path with no cheat.
   final path = findSinglePath(maze);
 
-// Then find the savings from all cheats lasting up to 2 picoseconds.
+  // Then find the savings from all cheats lasting up to 2 picoseconds.
   final savingsTarget = file.path.contains('real_data') ? 100 : 20;
   return uniqueCheatSavings(path, 2).where((x) => x >= savingsTarget).length;
 }

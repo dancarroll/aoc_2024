@@ -11,23 +11,22 @@ final class NumericKeypad {
   NumericKeypad._(this.layout);
 
   factory NumericKeypad.standard() {
-    return NumericKeypad._(BiMap()
-      ..addAll(
-        {
-          Point(0, 0): '7',
-          Point(1, 0): '8',
-          Point(2, 0): '9',
-          Point(0, 1): '4',
-          Point(1, 1): '5',
-          Point(2, 1): '6',
-          Point(0, 2): '1',
-          Point(1, 2): '2',
-          Point(2, 2): '3',
-          Point(0, 3): 'X',
-          Point(1, 3): '0',
-          Point(2, 3): 'A',
-        },
-      ));
+    return NumericKeypad._(
+      BiMap()..addAll({
+        Point(0, 0): '7',
+        Point(1, 0): '8',
+        Point(2, 0): '9',
+        Point(0, 1): '4',
+        Point(1, 1): '5',
+        Point(2, 1): '6',
+        Point(0, 2): '1',
+        Point(1, 2): '2',
+        Point(2, 2): '3',
+        Point(0, 3): 'X',
+        Point(1, 3): '0',
+        Point(2, 3): 'A',
+      }),
+    );
   }
 
   Point<int> buttonLocation(String char) => layout.inverse[char]!;
@@ -35,9 +34,14 @@ final class NumericKeypad {
   /// Returns all of the combinations of steps from the starting point to given
   /// keypad character.
   Iterable<DirectionList> stepCombinationsTo(
-          Point<int> starting, String char) =>
-      generateStepCombinationsTo(
-          starting, layout.inverse[char]!, layout, (c) => c != 'X');
+    Point<int> starting,
+    String char,
+  ) => generateStepCombinationsTo(
+    starting,
+    layout.inverse[char]!,
+    layout,
+    (c) => c != 'X',
+  );
 }
 
 typedef Direction = ({DirectionalButton direction, Point<int> step});
@@ -53,21 +57,21 @@ enum DirectionalButton {
 
   @override
   String toString() => switch (this) {
-        up => '^',
-        right => '>',
-        down => 'v',
-        left => '<',
-        activate => 'A',
-        _ => throw Exception('unexpected direction'),
-      };
+    up => '^',
+    right => '>',
+    down => 'v',
+    left => '<',
+    activate => 'A',
+    _ => throw Exception('unexpected direction'),
+  };
 
   /// List of all directions along with the grid transformation.
   static List<Direction> get directions => [
-        (direction: DirectionalButton.up, step: Point(0, -1)),
-        (direction: DirectionalButton.right, step: Point(1, 0)),
-        (direction: DirectionalButton.down, step: Point(0, 1)),
-        (direction: DirectionalButton.left, step: Point(-1, 0)),
-      ];
+    (direction: DirectionalButton.up, step: Point(0, -1)),
+    (direction: DirectionalButton.right, step: Point(1, 0)),
+    (direction: DirectionalButton.down, step: Point(0, 1)),
+    (direction: DirectionalButton.left, step: Point(-1, 0)),
+  ];
 }
 
 /// Represents a directional keypad controller by a robot.
@@ -77,17 +81,16 @@ final class DirectionalKeypad {
   DirectionalKeypad._(this.layout);
 
   factory DirectionalKeypad.standard() {
-    return DirectionalKeypad._(BiMap()
-      ..addAll(
-        {
-          Point(0, 0): DirectionalButton.none,
-          Point(1, 0): DirectionalButton.up,
-          Point(2, 0): DirectionalButton.activate,
-          Point(0, 1): DirectionalButton.left,
-          Point(1, 1): DirectionalButton.down,
-          Point(2, 1): DirectionalButton.right,
-        },
-      ));
+    return DirectionalKeypad._(
+      BiMap()..addAll({
+        Point(0, 0): DirectionalButton.none,
+        Point(1, 0): DirectionalButton.up,
+        Point(2, 0): DirectionalButton.activate,
+        Point(0, 1): DirectionalButton.left,
+        Point(1, 1): DirectionalButton.down,
+        Point(2, 1): DirectionalButton.right,
+      }),
+    );
   }
 
   /// Returns the grid location of the given [button].
@@ -97,9 +100,14 @@ final class DirectionalKeypad {
   /// Returns all of the combinations of steps from the starting point to
   /// the given [target] button.
   Set<DirectionList> stepCombinationsTo(
-          Point<int> starting, DirectionalButton target) =>
-      generateStepCombinationsTo(starting, layout.inverse[target]!, layout,
-          (button) => button != DirectionalButton.none);
+    Point<int> starting,
+    DirectionalButton target,
+  ) => generateStepCombinationsTo(
+    starting,
+    layout.inverse[target]!,
+    layout,
+    (button) => button != DirectionalButton.none,
+  );
 }
 
 /// Represents a list of direction button presses.
@@ -139,8 +147,12 @@ final class DirectionList extends collection.DelegatingList<DirectionalButton> {
 /// keypads, so also need to provide a map to resolve what button is at each
 /// point, and a function to define which locations are not valid (e.g.
 /// blank spots the robot can never cross over).
-Set<DirectionList> generateStepCombinationsTo<T>(Point<int> starting,
-    Point<int> target, BiMap<Point<int>, T> map, bool Function(T) isValid) {
+Set<DirectionList> generateStepCombinationsTo<T>(
+  Point<int> starting,
+  Point<int> target,
+  BiMap<Point<int>, T> map,
+  bool Function(T) isValid,
+) {
   // Store a list of paths. Each path needs to keep track of its current
   // location, and list of directions so far.
   List<(Point<int>, DirectionList)> paths = [];
@@ -162,7 +174,7 @@ Set<DirectionList> generateStepCombinationsTo<T>(Point<int> starting,
                 newLocation.squaredDistanceTo(target)) {
           newPaths.add((
             path.$1 + step.step,
-            DirectionList([...path.$2, step.direction])
+            DirectionList([...path.$2, step.direction]),
           ));
         }
       }

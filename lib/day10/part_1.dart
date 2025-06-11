@@ -31,7 +31,10 @@ Future<int> calculate(File file) async {
 /// DFS function, and needs to keep track of all the points that have already
 /// been visited.
 Set<Point> _summitsReachableFromPoint(
-    TopographicMap topoMap, Point point, Set<Point> visitedPoints) {
+  TopographicMap topoMap,
+  Point point,
+  Set<Point> visitedPoints,
+) {
   if (visitedPoints.contains(point)) {
     return {};
   }
@@ -44,7 +47,8 @@ Set<Point> _summitsReachableFromPoint(
       summits.add(nextPoint);
     } else {
       summits.addAll(
-          _summitsReachableFromPoint(topoMap, nextPoint, visitedPoints));
+        _summitsReachableFromPoint(topoMap, nextPoint, visitedPoints),
+      );
     }
   }
 

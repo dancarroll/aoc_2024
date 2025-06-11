@@ -38,22 +38,24 @@ int _calculatePosition(List<String> lines, int row, int col) {
   for (var i = 0; i < directions.length; i++) {
     for (var j = 0; j < directions.length; j++) {
       result += _calculateDirection(
-          lines: lines,
-          row: row,
-          col: col,
-          rowDir: directions[i],
-          colDir: directions[j]);
+        lines: lines,
+        row: row,
+        col: col,
+        rowDir: directions[i],
+        colDir: directions[j],
+      );
     }
   }
   return result;
 }
 
-int _calculateDirection(
-    {required final List<String> lines,
-    required final int row,
-    required final int col,
-    required final int rowDir,
-    required final int colDir}) {
+int _calculateDirection({
+  required final List<String> lines,
+  required final int row,
+  required final int col,
+  required final int rowDir,
+  required final int colDir,
+}) {
   if (rowDir == 0 && colDir == 0) return 0;
 
   var r = row, c = col;

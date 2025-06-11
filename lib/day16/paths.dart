@@ -5,10 +5,7 @@ import 'package:aoc_2024/lib.dart';
 import 'shared.dart';
 
 /// Represents a step in the maze.
-enum Step {
-  straight,
-  turn;
-}
+enum Step { straight, turn }
 
 /// Represents the heading of a reindeer in the maze.
 enum Heading {
@@ -19,11 +16,11 @@ enum Heading {
 
   /// Calculates the new point based on a given point and this heading.
   Point<int> move(Point<int> point) => switch (this) {
-        up => Point(point.x, point.y - 1),
-        down => Point(point.x, point.y + 1),
-        left => Point(point.x - 1, point.y),
-        right => Point(point.x + 1, point.y)
-      };
+    up => Point(point.x, point.y - 1),
+    down => Point(point.x, point.y + 1),
+    left => Point(point.x - 1, point.y),
+    right => Point(point.x + 1, point.y),
+  };
 
   /// Returns a new heading representing a clockwise 90 degree rotation.
   Heading rotateClockwise() {
@@ -74,8 +71,8 @@ final class CandidatePath implements Comparable<CandidatePath> {
   int _score;
 
   CandidatePath(this.visited, this.steps, this.current, {score = 0})
-      : _index = _pathCounter++,
-        _score = score;
+    : _index = _pathCounter++,
+      _score = score;
 
   /// Creates a new candidate from an existing candidate, by copying its
   /// list of visited points and steps.
@@ -132,7 +129,11 @@ CandidatePath findBestPath(Maze maze) {
 List<CandidatePath> findBestPaths(Maze maze, {bool stopAfterFirst = false}) {
   // Prime the list of candidate paths with the starting point.
   final paths = [
-    CandidatePath({maze.start}, [], (heading: Heading.right, point: maze.start))
+    CandidatePath(
+      {maze.start},
+      [],
+      (heading: Heading.right, point: maze.start),
+    ),
   ];
   final completedPaths = <CandidatePath>[];
 
@@ -196,8 +197,11 @@ List<CandidatePath> findBestPaths(Maze maze, {bool stopAfterFirst = false}) {
       }
 
       // Find all of the possible next steps along the current path.
-      final nextSteps =
-          _getValidStepsFromPoint(maze, path.current, path.visited);
+      final nextSteps = _getValidStepsFromPoint(
+        maze,
+        path.current,
+        path.visited,
+      );
       if (nextSteps.isNotEmpty) {
         // For any additional valid steps, branch off a new candidate path.
         for (int i = 1; i < nextSteps.length; i++) {
@@ -240,24 +244,31 @@ List<CandidatePath> findBestPaths(Maze maze, {bool stopAfterFirst = false}) {
 /// only moves in cardinal directions are allowed, and one of those 4 directions
 /// would have already been visited).
 List<NextStep> _getValidStepsFromPoint(
-    Maze maze, ReindeerLocation current, Set<Point<int>> visited) {
+  Maze maze,
+  ReindeerLocation current,
+  Set<Point<int>> visited,
+) {
   // Given the only potential moves (straight, clockwise, counterclockwise)
   return [
-    (current.heading, Step.straight),
-    (current.heading.rotateClockwise(), Step.turn),
-    (current.heading.rotateCounterclockwise(), Step.turn),
-  ]
+        (current.heading, Step.straight),
+        (current.heading.rotateClockwise(), Step.turn),
+        (current.heading.rotateCounterclockwise(), Step.turn),
+      ]
       // Generate the corresponding steps.
-      .map((h) => (
-            step: h.$2,
-            location: (heading: h.$1, point: h.$1.move(current.point))
-          ))
+      .map(
+        (h) => (
+          step: h.$2,
+          location: (heading: h.$1, point: h.$1.move(current.point)),
+        ),
+      )
       // Filter out any step that would visit a visited point.
       .where((ns) => !visited.contains(ns.location.point))
       // Limit to steps that would land on empty spaces or the end.
-      .where((ns) =>
-          maze.map[ns.location.point] == Location.empty ||
-          maze.map[ns.location.point] == Location.end)
+      .where(
+        (ns) =>
+            maze.map[ns.location.point] == Location.empty ||
+            maze.map[ns.location.point] == Location.end,
+      )
       // Convert to a list (since it will later be indexed).
       .toList();
 }

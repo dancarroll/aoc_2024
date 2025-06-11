@@ -23,8 +23,10 @@ Future<int> calculate(File file) async {
         final areaAndPerimeter = computeFencePriceForRegion(map, r, c, visited);
         fenceCost += areaAndPerimeter.area * areaAndPerimeter.perimeter;
 
-        assert(areaAndPerimeter.perimeter.isEven,
-            'Perimeter should always be even');
+        assert(
+          areaAndPerimeter.perimeter.isEven,
+          'Perimeter should always be even',
+        );
       }
     }
   }
@@ -34,7 +36,11 @@ Future<int> calculate(File file) async {
 
 /// Recursively compute the fence price for a given region.
 AreaAndSize computeFencePriceForRegion(
-    List<List<String>> map, int r, int c, Set<(int, int)> visited) {
+  List<List<String>> map,
+  int r,
+  int c,
+  Set<(int, int)> visited,
+) {
   // If we've already visited this location, immediately return zero, so that
   // we don't overcount.
   if (visited.contains((r, c))) {
@@ -61,8 +67,12 @@ AreaAndSize computeFencePriceForRegion(
         map[nextRow][nextCol] == plant) {
       // If the next position is in-bounds and of the same plant type,
       // add its entire area and perimeter.
-      final areaAndSize =
-          computeFencePriceForRegion(map, nextRow, nextCol, visited);
+      final areaAndSize = computeFencePriceForRegion(
+        map,
+        nextRow,
+        nextCol,
+        visited,
+      );
       area += areaAndSize.area;
       perimeter += areaAndSize.perimeter;
     } else {

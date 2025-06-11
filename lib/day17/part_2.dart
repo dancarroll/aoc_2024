@@ -15,8 +15,10 @@ Future<int> calculate(File file) async {
 /// Solves the problem for the given computer. This is split out from [compute]
 /// in order to be used from tests with input not defined in a file.
 int solve(Computer computer) {
-  final expectedOutput =
-      computer.serializedInstructions.split(',').map(int.parse).toList();
+  final expectedOutput = computer.serializedInstructions
+      .split(',')
+      .map(int.parse)
+      .toList();
 
   final foundA = findA(computer, 0, expectedOutput);
   assert(foundA != null, 'Did not find an answer');
@@ -46,8 +48,11 @@ int? findA(Computer computer, int a, List<int> targetOutput) {
     // If this value matches, recursively call this function for the next
     // value in the output.
     if (outputTriad == targetOutput.last) {
-      final branchA = findA(computer, potentialA,
-          targetOutput.sublist(0, targetOutput.length - 1));
+      final branchA = findA(
+        computer,
+        potentialA,
+        targetOutput.sublist(0, targetOutput.length - 1),
+      );
       if (branchA != null) {
         return branchA;
       }

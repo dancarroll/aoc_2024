@@ -10,7 +10,9 @@ final directionKeypad = DirectionalKeypad.standard();
 /// Determine the shortest sequence of directions in a sequence of
 /// [numDirectionalKeypads] directional keypads.
 int shortestSequenceForNumpadEntry(
-    Set<DirectionList> options, int numDirectionalKeypads) {
+  Set<DirectionList> options,
+  int numDirectionalKeypads,
+) {
   int lowestCost = maxInt;
   for (final list in options) {
     final cost = costForDirectionList(list, numDirectionalKeypads);
@@ -29,7 +31,11 @@ int costForDirectionList(DirectionList directions, int numDirectionalKeypads) {
     var starting = DirectionalButton.activate;
     for (final direction in group) {
       cost += costForDirectionInPhase(
-          direction, starting, 1, numDirectionalKeypads);
+        direction,
+        starting,
+        1,
+        numDirectionalKeypads,
+      );
       starting = direction;
     }
   }
@@ -42,7 +48,7 @@ int costForDirectionList(DirectionList directions, int numDirectionalKeypads) {
 typedef IterationRecord = ({
   DirectionalButton targetButton,
   DirectionalButton startingButton,
-  int iteration
+  int iteration,
 });
 
 /// Map of the lowest cost seen for a given iteration record.
@@ -50,8 +56,12 @@ Map<IterationRecord, int> costPerIteration = {};
 
 /// Calculate the cost to reach [target] from [start] in the [phase] keyboard
 /// in a sequence of [numDirectionalKeypads] directional keypads.
-int costForDirectionInPhase(DirectionalButton target, DirectionalButton start,
-    int phase, int numDirectionalKeypads) {
+int costForDirectionInPhase(
+  DirectionalButton target,
+  DirectionalButton start,
+  int phase,
+  int numDirectionalKeypads,
+) {
   final key = (targetButton: target, startingButton: start, iteration: phase);
   if (costPerIteration.containsKey(key)) {
     return costPerIteration[key]!;
@@ -68,12 +78,18 @@ int costForDirectionInPhase(DirectionalButton target, DirectionalButton start,
 
   int lowestCost = maxInt;
   for (final combination in directionKeypad.stepCombinationsTo(
-      directionKeypad.layout.inverse[start]!, target)) {
+    directionKeypad.layout.inverse[start]!,
+    target,
+  )) {
     int cost = 0;
     var lastStep = DirectionalButton.activate;
     for (final step in combination) {
       cost += costForDirectionInPhase(
-          step, lastStep, phase + 1, numDirectionalKeypads);
+        step,
+        lastStep,
+        phase + 1,
+        numDirectionalKeypads,
+      );
       lastStep = step;
     }
 
@@ -98,8 +114,10 @@ int shortestSequence(String code, int numDirectionalKeypads) {
   Point<int> numericKeypadPointer = numericKeypad.buttonLocation('A');
   for (final char in code.split('')) {
     Set<DirectionList> newList = {};
-    final numericStepsForChar =
-        numericKeypad.stepCombinationsTo(numericKeypadPointer, char);
+    final numericStepsForChar = numericKeypad.stepCombinationsTo(
+      numericKeypadPointer,
+      char,
+    );
     if (numericSteps.isEmpty) {
       newList.addAll(numericStepsForChar);
     } else {
@@ -122,8 +140,10 @@ int shortestSequence(String code, int numDirectionalKeypads) {
 /// Returns the total complexity for all codes, given a sequence of
 /// [numDirectionalKeypads] direction keypads controlled by robots, controlling
 /// one robot at a numeric keypad.
-Future<int> totalComplexityForCodes(List<String> codes,
-    {required int numDirectionalKeypads}) async {
+Future<int> totalComplexityForCodes(
+  List<String> codes, {
+  required int numDirectionalKeypads,
+}) async {
   costPerIteration.clear();
 
   return codes

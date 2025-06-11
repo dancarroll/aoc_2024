@@ -15,7 +15,7 @@ enum ResourceType {
 
   /// Extra inputs, not part of the official AoC inputs.
   /// For example, stress-test inputs shared on Reddit.
-  fun;
+  fun,
 }
 
 /// Represents each day in Advent of Code 2024.

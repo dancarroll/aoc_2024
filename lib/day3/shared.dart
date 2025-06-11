@@ -17,8 +17,8 @@ final class Mult extends Instruction {
   final int second;
 
   Mult(String firstStr, String secondStr)
-      : first = int.parse(firstStr),
-        second = int.parse(secondStr);
+    : first = int.parse(firstStr),
+      second = int.parse(secondStr);
 
   int get product => first * second;
 }
@@ -26,8 +26,10 @@ final class Mult extends Instruction {
 /// Parses an instruction from a regular expression match.
 Instruction _parseInstruction(RegExpMatch match) {
   if (match.namedGroup('mult') != null) {
-    return Mult(match.namedGroup('first').toString(),
-        match.namedGroup('second').toString());
+    return Mult(
+      match.namedGroup('first').toString(),
+      match.namedGroup('second').toString(),
+    );
   } else if (match.namedGroup('dont') != null) {
     return Dont();
   } else if (match.namedGroup('do') != null) {
@@ -40,12 +42,13 @@ Instruction _parseInstruction(RegExpMatch match) {
 /// Parses a string into an ordered list of instructions.
 List<Instruction> _parseLine(String line) {
   final regex = RegExp(
-      // First group: match `mul(123, 456)`
-      r'(?<mult>mul\((?<first>\d{1,3}),(?<second>\d{1,3})\))'
-      // Second group: match `don't()`
-      r"|(?<dont>don't\(\))"
-      // Third group: match `do()`
-      r'|(?<do>do\(\))');
+    // First group: match `mul(123, 456)`
+    r'(?<mult>mul\((?<first>\d{1,3}),(?<second>\d{1,3})\))'
+    // Second group: match `don't()`
+    r"|(?<dont>don't\(\))"
+    // Third group: match `do()`
+    r'|(?<do>do\(\))',
+  );
 
   return regex.allMatches(line).map(_parseInstruction).toList();
 }

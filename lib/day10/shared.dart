@@ -9,7 +9,7 @@ final class Point {
   final int val;
 
   Point({required int x, required int y, required this.val})
-      : _point = math.Point(x, y);
+    : _point = math.Point(x, y);
 
   int get x => _point.x;
   int get y => _point.y;

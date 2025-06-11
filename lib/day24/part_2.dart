@@ -118,8 +118,9 @@ List<int> _getIncorrectBits(Map<String, Wire> wires) {
   final expectedValue = x + y;
 
   final zBinary = _getBinaryFromWires(wires, 'z');
-  final expectedBinary =
-      expectedValue.toRadixString(2).padLeft(zBinary.length, '0');
+  final expectedBinary = expectedValue
+      .toRadixString(2)
+      .padLeft(zBinary.length, '0');
 
   final expectedBits = expectedBinary.split('');
   final actualBits = zBinary.split('');
@@ -138,23 +139,23 @@ List<int> _getIncorrectBits(Map<String, Wire> wires) {
 /// Returns a list of output wire names that are incorrect, based on the
 /// expected value.
 List<String> _getIncorrectOutputWires(Map<String, Wire> wires) {
-  return _getIncorrectBits(wires)
-      .map((i) => i.toString().padLeft(2, '0'))
-      .map((s) => 'z$s')
-      .toList();
+  return _getIncorrectBits(
+    wires,
+  ).map((i) => i.toString().padLeft(2, '0')).map((s) => 'z$s').toList();
 }
 
 /// Returns the integer number based on the binary values of the
 /// wires started with the given [char].
 int _getNumberFromWires(Map<String, Wire> wires, String char) {
   return int.parse(
-      wires.entries
-          .where((e) => e.key.startsWith(char))
-          .sortedBy((e) => e.key)
-          .reversed
-          .map((e) => e.value.calculate(wires) ? '1' : '0')
-          .join(''),
-      radix: 2);
+    wires.entries
+        .where((e) => e.key.startsWith(char))
+        .sortedBy((e) => e.key)
+        .reversed
+        .map((e) => e.value.calculate(wires) ? '1' : '0')
+        .join(''),
+    radix: 2,
+  );
 }
 
 /// Performs a wire swap.

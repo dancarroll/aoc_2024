@@ -27,7 +27,11 @@ Future<int> calculate(File file) async {
 
 /// Recursively compute the fence price for a given region.
 AreaAndSides computeFencePriceForRegion(
-    List<List<String>> map, int r, int c, Set<(int, int)> visited) {
+  List<List<String>> map,
+  int r,
+  int c,
+  Set<(int, int)> visited,
+) {
   // If we've already visited this location, immediately return zero, so that
   // we don't overcount.
   if (visited.contains((r, c))) {
@@ -54,8 +58,12 @@ AreaAndSides computeFencePriceForRegion(
         map[nextRow][nextCol] == plant) {
       // If the next position is in-bounds and of the same plant type,
       // add its entire area and perimeter.
-      final areaAndSize =
-          computeFencePriceForRegion(map, nextRow, nextCol, visited);
+      final areaAndSize = computeFencePriceForRegion(
+        map,
+        nextRow,
+        nextCol,
+        visited,
+      );
       area += areaAndSize.area;
       sides += areaAndSize.sides;
     }
@@ -69,12 +77,7 @@ AreaAndSides computeFencePriceForRegion(
 
   // Find all outside corners this space represents (for a single isolated
   // plant, this could be 4 outside corners).
-  for (final direction in [
-    (-1, -1),
-    (-1, 1),
-    (1, 1),
-    (1, -1),
-  ]) {
+  for (final direction in [(-1, -1), (-1, 1), (1, 1), (1, -1)]) {
     final ar = r + direction.$1;
     final ac = c + direction.$2;
     if ((!inBounds(r, ac) || map[r][ac] != plant) &&

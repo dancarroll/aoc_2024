@@ -30,16 +30,16 @@ enum OpCode {
 
   /// Returns the enum value representing the opcode value.
   factory OpCode.fromNum(int num) => switch (num) {
-        0 => adv,
-        1 => bxl,
-        2 => bst,
-        3 => jnz,
-        4 => bxc,
-        5 => out,
-        6 => bdv,
-        7 => cdv,
-        _ => throw Exception('Invalid opcode $num'),
-      };
+    0 => adv,
+    1 => bxl,
+    2 => bst,
+    3 => jnz,
+    4 => bxc,
+    5 => out,
+    6 => bdv,
+    7 => cdv,
+    _ => throw Exception('Invalid opcode $num'),
+  };
 }
 
 /// Represents a single instruction for the computer, which is an opcode
@@ -70,10 +70,20 @@ final class Computer {
   final String serializedInstructions;
 
   Computer(
-      this.a, this.b, this.c, this.instructions, this.serializedInstructions);
+    this.a,
+    this.b,
+    this.c,
+    this.instructions,
+    this.serializedInstructions,
+  );
 
   factory Computer.withOverrideA(Computer other, int a) => Computer(
-      a, other.b, other.c, other.instructions, other.serializedInstructions);
+    a,
+    other.b,
+    other.c,
+    other.instructions,
+    other.serializedInstructions,
+  );
 
   /// Executes the program to completiong, and returns the result.
   /// If [allowJumps] is false, this execution will not allow the jump

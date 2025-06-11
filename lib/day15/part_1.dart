@@ -24,7 +24,10 @@ Future<int> calculate(File file) async {
     switch (warehouse[nextSpace].type) {
       case LocationType.box:
         final openSpace = doesPathContainOpenSpace(
-            warehouse, nextSpace, instruction.direction);
+          warehouse,
+          nextSpace,
+          instruction.direction,
+        );
         if (openSpace != null) {
           // If there is an open space, rather than moving each of the boxes, we
           // can just fill in the open space with a box.
@@ -59,7 +62,10 @@ Future<int> calculate(File file) async {
 ///
 /// Returns null if encountering a wall before an empty space.
 Point<int>? doesPathContainOpenSpace(
-    Warehouse warehouse, Point<int> point, Point<int> direction) {
+  Warehouse warehouse,
+  Point<int> point,
+  Point<int> direction,
+) {
   Point<int> nextPoint = point + direction;
   while (warehouse[nextPoint].type != LocationType.wall) {
     if (warehouse[nextPoint].type == LocationType.empty) {

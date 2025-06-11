@@ -9,10 +9,16 @@ Future<Map<String, Set<String>>> loadData(File file) async {
     final computers = line.split('-');
     assert(computers.length == 2, 'Only two names expected');
 
-    network.update(computers[0], (l) => l..add(computers[1]),
-        ifAbsent: () => {computers[1]});
-    network.update(computers[1], (l) => l..add(computers[0]),
-        ifAbsent: () => {computers[0]});
+    network.update(
+      computers[0],
+      (l) => l..add(computers[1]),
+      ifAbsent: () => {computers[1]},
+    );
+    network.update(
+      computers[1],
+      (l) => l..add(computers[0]),
+      ifAbsent: () => {computers[0]},
+    );
   }
 
   return network;

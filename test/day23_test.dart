@@ -33,13 +33,17 @@ void main() {
     });
 
     test('part2', () async {
-      expect(await part2.calculate(file),
-          'ar,cd,hl,iw,jm,ku,qo,rz,vo,xe,xm,xv,ys');
+      expect(
+        await part2.calculate(file),
+        'ar,cd,hl,iw,jm,ku,qo,rz,vo,xe,xm,xv,ys',
+      );
     });
 
     test('part2 with Bron–Kerbosch', () async {
-      expect(await part2bk.calculate(file),
-          'ar,cd,hl,iw,jm,ku,qo,rz,vo,xe,xm,xv,ys');
+      expect(
+        await part2bk.calculate(file),
+        'ar,cd,hl,iw,jm,ku,qo,rz,vo,xe,xm,xv,ys',
+      );
     });
   });
 }

@@ -40,20 +40,18 @@ Future<Data> loadData(File file) async {
   final lines = await file.readAsLines();
 
   List<Robot> robots = [];
-  final lineRegex =
-      RegExp(r'^p=(?<px>\d+),(?<py>\d+) v=(?<vx>-?\d+),(?<vy>-?\d+)$');
+  final lineRegex = RegExp(
+    r'^p=(?<px>\d+),(?<py>\d+) v=(?<vx>-?\d+),(?<vy>-?\d+)$',
+  );
   for (final line in lines) {
     final match = lineRegex.firstMatch(line)!;
     match.namedGroup('px');
-    robots.add(Robot(
-        Point(
-          toInt(match.namedGroup('px')),
-          toInt(match.namedGroup('py')),
-        ),
-        Point(
-          toInt(match.namedGroup('vx')),
-          toInt(match.namedGroup('vy')),
-        )));
+    robots.add(
+      Robot(
+        Point(toInt(match.namedGroup('px')), toInt(match.namedGroup('py'))),
+        Point(toInt(match.namedGroup('vx')), toInt(match.namedGroup('vy'))),
+      ),
+    );
   }
 
   // For some reason, height and width are not in the problem's input.

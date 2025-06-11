@@ -1,11 +1,7 @@
 import 'dart:io';
 
 /// Enum to keep track of the input processing state.
-enum ProcessingState {
-  unknown,
-  lock,
-  key;
-}
+enum ProcessingState { unknown, lock, key }
 
 typedef Data = ({List<List<int>> locks, List<List<int>> keys});
 

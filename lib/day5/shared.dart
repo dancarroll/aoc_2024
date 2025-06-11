@@ -30,15 +30,21 @@ final class Contents {
   /// Constructs a rules graph from a given list of rules, and returns
   /// a [Contents] instance containing the rules graph and a list of
   /// updates.
-  factory Contents.fromRulesList(
-      {required List<Rule> rules, required List<Update> updates}) {
+  factory Contents.fromRulesList({
+    required List<Rule> rules,
+    required List<Update> updates,
+  }) {
     final graph = <int, PageNode>{};
 
     for (final rule in rules) {
-      final beforeNode =
-          graph.putIfAbsent(rule.before, () => PageNode(page: rule.before));
-      final afterNode =
-          graph.putIfAbsent(rule.after, () => PageNode(page: rule.after));
+      final beforeNode = graph.putIfAbsent(
+        rule.before,
+        () => PageNode(page: rule.before),
+      );
+      final afterNode = graph.putIfAbsent(
+        rule.after,
+        () => PageNode(page: rule.after),
+      );
 
       beforeNode.after.add(afterNode);
     }
